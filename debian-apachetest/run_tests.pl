@@ -14,6 +14,7 @@ use HTTP::Tiny;
 
 my $testinput_dir = './testinput';
 my $testoutput_dir = './testoutput';
+my $testimage_dir = './testimage';
 my $apache_conf_preamble = <<'EOT';
 
 ServerName 127.0.0.1
@@ -86,6 +87,32 @@ foreach my $file (@files) {
 		close($fh);
 	} else {
 		#compare..
+	}
+
+	#screenie
+	if (!-f "$testimage_dir/$file.jpg") {
+	#http://stackoverflow.com/questions/125951/command-line-program-to-create-website-screenshots-on-linux
+		# start a server with a specific DISPLAY
+print "start X\n";
+		`Xvnc :11 -geometry 444x333 &`;
+		# start firefox in this vnc session
+print "start firefox\n";
+		`iceweasel --display :11 &`;
+
+print "start $url\n";
+		`iceweasel --display :11 $url`;
+		# take a picture after waiting a bit for the load to finish
+print " sleep\n";
+		`sleep 5`;
+		#imagemagick
+		#`import -window root image$count.png`;
+		#scrot
+print " snapshot\n";
+		` vncsnapshot -passwd \$HOME/.vnc/passwd :11 $testimage_dir/$file.jpg`;
+
+		# clean up when done
+#print "stop X\n";
+#		`vncserver -kill :11`;
 	}
 }
 

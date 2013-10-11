@@ -17,10 +17,12 @@ RUN (echo y;echo o conf prerequisites_policy follow;echo o conf commit)|cpan Tes
 
 RUN apt-get install -y --force-yes apache2-prefork-dev libapr1-dev libapreq2-dev
 RUN apt-get install -y --force-yes vim
+RUN apt-get install -y --force-yes iceweasel tightvncserver vncsnapshot
 
 #RUN (echo y;echo o conf prerequisites_policy follow;echo o conf commit)|cpan ExtUtils::MakeMaker
 #RUN (echo y;echo o conf prerequisites_policy follow;echo o conf commit)|cpan local::lib
 
+ADD passwd $HOME/.vnc/passwd
 
 RUN bash -c 'echo "/usr/sbin/apachectl start" >> /.bashrc'
 
