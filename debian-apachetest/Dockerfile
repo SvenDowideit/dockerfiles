@@ -1,6 +1,7 @@
 # lets create an ubuntu image to run the Apache tests I have
 #
 # docker build -t svendowideit/runtests .
+# alias runtest='docker run -w /mnt -t -i -v /home/sven:/mnt svendowideit/runtests ./run_tests.pl'
 
 FROM tianon/debian-roll:stable
 MAINTAINER	Sven Dowideit <SvenDowideit@home.org.au>
