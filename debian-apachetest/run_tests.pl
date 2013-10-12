@@ -93,22 +93,30 @@ foreach my $file (@files) {
 	if (!-f "$testimage_dir/$file.jpg") {
 	#http://stackoverflow.com/questions/125951/command-line-program-to-create-website-screenshots-on-linux
 		# start a server with a specific DISPLAY
-print "start X\n";
+#print "start X\n";
 		`Xvnc :11 -geometry 444x333 &`;
 		# start firefox in this vnc session
-print "start firefox\n";
-		`iceweasel --display :11 &`;
-
-print "start $url\n";
-		`iceweasel --display :11 $url`;
-		# take a picture after waiting a bit for the load to finish
-print " sleep\n";
+#print " sleep\n";
 		`sleep 5`;
+
+	#we want 444px width :/
+		`DISPLAY=:11 cutycapt --url=$url --out=$testimage_dir/large_$file.jpg  --min-width=888`;
+		`convert $testimage_dir/large_$file.jpg    -resize 50%  $testimage_dir/$file.jpg`;
+
+#print "start firefox\n";
+#		`iceweasel -fullscreen --display :11 &`;
+#chromium --ash-enable-immersive-fullscreen
+#
+#print "start $url\n";
+#		`iceweasel --display :11 $url`;
+		# take a picture after waiting a bit for the load to finish
+#print " sleep\n";
+#		`sleep 5`;
 		#imagemagick
 		#`import -window root image$count.png`;
 		#scrot
-print " snapshot\n";
-		` vncsnapshot -passwd \$HOME/.vnc/passwd :11 $testimage_dir/$file.jpg`;
+#print " snapshot\n";
+#		` vncsnapshot -passwd \$HOME/.vnc/passwd :11 $testimage_dir/$file.jpg`;
 
 		# clean up when done
 #print "stop X\n";
