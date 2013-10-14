@@ -12,9 +12,9 @@ use warnings;
 use Test::Httpd::Apache2;
 use HTTP::Tiny;
 
-my $testinput_dir = './testinput';
-my $testoutput_dir = './testoutput';
-my $testimage_dir = './testimage';
+my $testinput_dir = './en-US/extras';
+my $testoutput_dir = './en-US/extras';
+my $testimage_dir = './en-US/images';
 my $apache_conf_preamble = <<'EOT';
 
 ServerName 127.0.0.1
@@ -81,8 +81,8 @@ foreach my $file (@files) {
 	 
 	print $response->{content} if length $response->{content};
 	print "\n----------------------\n";
-	if (!-f "$testoutput_dir/$file") {
-		open($fh, ">", "$testoutput_dir/$file") || next;
+	if (!-f "$testoutput_dir/$file.html") {
+		open($fh, ">", "$testoutput_dir/$file.html") || next;
 		print $fh $response->{content};
 		close($fh);
 	} else {
