@@ -27,7 +27,8 @@ RUN apt-get install -y --force-yes imagemagick
 #RUN (echo y;echo o conf prerequisites_policy follow;echo o conf commit)|cpan ExtUtils::MakeMaker
 #RUN (echo y;echo o conf prerequisites_policy follow;echo o conf commit)|cpan local::lib
 
-ADD passwd $HOME/.vnc/passwd
+#set up a secret password for Xvnc to use
+RUN date | vncpasswd -f > $HOME/.vnc/passwd
 
 RUN bash -c 'echo "/usr/sbin/apachectl start" >> /.bashrc'
 
