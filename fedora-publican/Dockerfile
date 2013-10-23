@@ -4,7 +4,7 @@
 # Build the container:
 #   docker build -t svendowideit/publican .
 # Run Publican (in this example, mount the current directory, and build the docbook that is in it):
-#   docker run -t -i -v $(pwd):/mnt svendowideit/publican build --src_dir=/mnt --langs=en-US --formats=pdf
+#   docker run -t -i -v $(pwd):/home/publican svendowideit/publican build --langs=en-US --formats=pdf
 
 FROM mattdm/fedora
 MAINTAINER	Sven Dowideit <SvenDowideit@home.org.au>
@@ -14,9 +14,12 @@ RUN yum -y install publican-fedora publican-jboss publican-common-db5-web public
 
 #RUN bash -c 'echo "echo foswiki configure admin user password is 'admin'" >> /.bashrc'
 
+VOLUME  /home/publican
+WORKDIR /home/publican
+
+
 CMD ["--help"]
 ENTRYPOINT ["publican"]
-WORKDIR /mnt
 
 #add defaults for src_dir, langs and formats
 RUN bash -c 'echo "formats: \"html,html-single,pdf,txt\""' >> /.publican.cfg
