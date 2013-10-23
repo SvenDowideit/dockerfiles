@@ -20,15 +20,15 @@ my $apache_conf_preamble = <<'EOT';
 ServerName 127.0.0.1
 
 LogLevel debug
-ErrorLog /mnt/error.log
+ErrorLog /home/test/error.log
 
 
 LogFormat "%h %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\"" combined
-CustomLog /mnt/access.log combined
+CustomLog /home/test/access.log combined
 #CustomLog {APACHE_LOG_DIR}/access.log combined
 
-#ServerRoot "/mnt"
-DocumentRoot /mnt
+#ServerRoot "/home/test"
+DocumentRoot /home/test
 
 User www-data
 Group www-data
@@ -42,8 +42,8 @@ Options +Indexes
 
 EOT
 
-unlink '/mnt/access.log';
-unlink '/mnt/error.log';
+unlink '/home/test/access.log';
+unlink '/home/test/error.log';
 
 opendir(my $dh, $testinput_dir) || die;
 my @files = grep { -f "$testinput_dir/$_" } readdir($dh);

@@ -1,7 +1,7 @@
 # lets create an ubuntu image to run the Apache tests I have
 #
 # docker build -t svendowideit/runtests .
-# alias runtest='docker run -w /mnt -t -i -v /home/sven:/mnt svendowideit/runtests ./run_tests.pl'
+# alias runtest='docker run -t -i -v $(pwd):/home/test svendowideit/runtests'
 
 FROM tianon/debian-roll:stable
 MAINTAINER	Sven Dowideit <SvenDowideit@home.org.au>
@@ -27,6 +27,9 @@ RUN apt-get install -y --force-yes imagemagick
 #RUN (echo y;echo o conf prerequisites_policy follow;echo o conf commit)|cpan ExtUtils::MakeMaker
 #RUN (echo y;echo o conf prerequisites_policy follow;echo o conf commit)|cpan local::lib
 
+VOLUME	/home/test
+WORKDIR /home/test
+
 #set up a secret password for Xvnc to use
 RUN date | vncpasswd -f > $HOME/.vnc/passwd
 
@@ -34,4 +37,5 @@ RUN bash -c 'echo "/usr/sbin/apachectl start" >> /.bashrc'
 
 EXPOSE 80
 
+CMD ["perl","-w", "run_tests.pl"]
 
