@@ -18,4 +18,8 @@ root@mini:~# dhcrelay 172.17.0.5 -m forward -D -d -i br0
 and setup http://blog.codeaholics.org/2013/giving-dockerlxc-containers-a-routable-ip-address/
 
 I now have to back each bit out to see what isn't needed :)
+1. killed the bcrelay, it still works?
+2. killed the dhcrelay, and it stopped working
 
+
+interestingly, after running it for a while, the host box becomes unresponsive (and there are no dhcp server replies either
