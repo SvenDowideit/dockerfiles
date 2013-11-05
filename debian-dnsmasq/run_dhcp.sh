@@ -45,5 +45,7 @@ iptables -t nat -I POSTROUTING -p all -s $DHCP_SERVER_IP -j SNAT --to-source $EX
 echo 2 > /proc/sys/net/ipv4/conf/eth5/rp_filter
 echo 2 > /proc/sys/net/ipv4/conf/dhcp_server/rp_filter
 
+
+#I presume some (the dhcrelay?) won't be needed  if i use the docker -p option for port 67
 bcrelay -i docker0 -o eth5 &
 dhcrelay $DHCP_SERVER_IP -m forward -D -d -i eth5
