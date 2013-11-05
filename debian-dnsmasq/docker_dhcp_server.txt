@@ -5,7 +5,7 @@ dnsmasq -d -a 172.17.0.3
 
 with no docker port redirects, we need to use other tools to pass the packets.
 
-
+apt-get install isc-dhcp-relay
 ``dhcrelay -i br0 172.17.0.3 -d``
 
 will pass the dhcp requests from the ethernet network to the docker container, but the container's replies are dumpted on the ground (you can see them on with ``dhcpdump -i docker0``)
