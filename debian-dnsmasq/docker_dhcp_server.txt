@@ -13,5 +13,9 @@ will pass the dhcp requests from the ethernet network to the docker container, b
 the next day, I followed a slightly different tack:
 
 root@mini:~# bcrelay -i docker0 -o br0
+root@mini:~# dhcrelay 172.17.0.5 -m forward -D -d -i br0
 
+and setup http://blog.codeaholics.org/2013/giving-dockerlxc-containers-a-routable-ip-address/
+
+I now have to back each bit out to see what isn't needed :)
 
