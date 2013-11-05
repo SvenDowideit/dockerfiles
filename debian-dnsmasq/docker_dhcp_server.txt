@@ -10,4 +10,8 @@ with no docker port redirects, we need to use other tools to pass the packets.
 
 will pass the dhcp requests from the ethernet network to the docker container, but the container's replies are dumpted on the ground (you can see them on with ``dhcpdump -i docker0``)
 
+the next day, I followed a slightly different tack:
+
+root@mini:~# bcrelay -i docker0 -o br0
+
 
