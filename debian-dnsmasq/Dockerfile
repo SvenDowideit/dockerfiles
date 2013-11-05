@@ -6,6 +6,7 @@
 FROM tianon/debian-roll:stable
 MAINTAINER	Sven Dowideit <SvenDowideit@home.org.au>
 
+RUN	apt-get update
 RUN 	apt-get install -y --force-yes dnsmasq
 RUN	echo 'conf-dir=/etc/dnsmasq.d' >> /etc/dnsmasq.conf
 
