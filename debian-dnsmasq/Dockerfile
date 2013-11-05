@@ -25,7 +25,7 @@ VOLUME	/etc/dnsmasq.d
 #default dnsmasq.conf for my network :)
 ADD	home.org.au.conf	/etc/dnsmasq.d/
 
-RUN bash -c 'echo "ip addr change 192.168.1.220 dev eth0" >> /.bashrc'
+RUN bash -c 'echo "ip addr change 192.168.1.56 dev eth0" >> /.bashrc'
 
 #for debugging
 CMD	["/bin/bash"]
