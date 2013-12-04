@@ -7,7 +7,7 @@
 # then to run it (on the host that has the real backend on it)
 #   docker run -t -i -link redis:redis -name redis_ambassador -p 6379:6379 ambassador
 # on the remote host, you can set up another ambassador
-#    docker run -t -i -name redis_ambassador -expose 6379 sh
+#    docker run -t -i -name redis_ambassador -expose 6379 -e REDIS_PORT_6379_TCP=tcp://192.168.1.52:6379 ambassador sh
 
 FROM	docker-ut
 MAINTAINER	SvenDowideit@home.org.au
