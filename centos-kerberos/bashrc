@@ -1,0 +1,20 @@
+echo kerberos.home.org.au > /proc/sys/kernel/hostname
+
+if [ ! -e /var/kerberos/krb5kdc/principal ]; then  
+	/usr/sbin/kdb5_util -r HOME.ORG.AU create -s
+	kadmin.local -r HOME.ORG.AU -q "addprinc admin/admin"
+	kadmin.local -r HOME.ORG.AU -q "addprinc sven"
+
+
+	echo test using: kinit sven
+fi 
+/etc/init.d/krb5kdc start
+/etc/init.d/kadmin start
+
+if [ ! -e /etc/http.keytab ]; then  
+	#apache stuff.
+	# http://www.microhowto.info/howto/configure_apache_to_use_kerberos_authentication.html
+	kinit admin/admin
+	kadmin -p admin/admin -q "addprinc -randkey HTTP/kerberos.home.org.au"
+	kadmin -p admin/admin -q "ktadd -k /etc/http.keytab HTTP/kerberos.home.org.au"
+fi
