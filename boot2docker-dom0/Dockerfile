@@ -19,14 +19,20 @@
 FROM dom0-base
 MAINTAINER SvenDowideit@home.org.au
 
-#CMD	["/usr/local/sbin/sshd", "-D"]
+RUN     ln -s /sock/docker.sock /var/run/docker.sock
 
+###### /home is external to dom0 so it too can be replaced often
+VOLUME  ["/home"]
+RUN     adduser -s /bin/sh -G docker -u 1111 -D sven
+#set password to '' - thus allowing ssh with keys?s
+RUN     passwd -d sven
+RUN     echo "sven    ALL=NOPASSWD: ALL" >> /etc/sudoers
+
+
+#add the start files
 ADD 	start.sh /start.sh
 CMD	    /start.sh
 RUN	    chmod 755 /start.sh
 
-####TODO: perhaps I should tightly control the UID for my convienience?
-###### /home is external to dom0 so it too can be replaced often
-VOLUME  ["/home"]
-RUN     adduser -S /bin/sh -G docker -D sven
-RUN     echo "sven    ALL=NOPASSWD: ALL" >> /etc/sudoers
+ADD 	motd /etc/motd
+
