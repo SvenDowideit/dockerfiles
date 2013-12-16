@@ -23,6 +23,7 @@ RUN     ln -s /sock/docker.sock /var/run/docker.sock
 
 ###### /home is external to dom0 so it too can be replaced often
 VOLUME  ["/home"]
+RUN     chmod 755 /home
 RUN     adduser -s /bin/sh -G docker -u 1111 -D sven
 #set password to '' - thus allowing ssh with keys?s
 RUN     passwd -d sven
