@@ -9,6 +9,8 @@
 # on the remote host, you can set up another ambassador
 #    docker run -t -i -name redis_ambassador -expose 6379 -e REDIS_PORT_6379_TCP=tcp://192.168.1.52:6379 ambassador sh
 
+# use docker-ut because its a simple busybox image with socat added.
+# prettymuch all that is needed is a container that has a functioning env and socat (or equivalent)
 FROM	docker-ut
 MAINTAINER	SvenDowideit@home.org.au
 
