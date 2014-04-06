@@ -45,7 +45,7 @@ build:
 	" | docker build -t data-volume-samba -
 
 run: build
-	docker run -v $(volume) --name $(data-container) busybox chown $(uid) $(volume) || true
+	docker inspect $(data-container) > /dev/null || docker run -v $(volume) --name $(data-container) busybox chown $(uid) $(volume)
 	docker run -p 139:139 -p 445:445 --rm -ti --volumes-from $(data-container) data-volume-samba
 
 #TODO: work out how to detect the volumes that are imported, and to then share them all - perhaps creating different users depending on ownership?
