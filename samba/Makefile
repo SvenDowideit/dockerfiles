@@ -31,7 +31,7 @@ build:
 	FROM	debian:stable \n\
 	MAINTAINER Sven Dowideit <SvenDowideit@docker.com> \n\
 	RUN	apt-get update ; apt-get install -yq samba \n\
-	RUN	 useradd $(user) --uid $(uid) --user-group  --password $(password) --home-dir $(volume) \n\
+	RUN	useradd $(user) --uid $(uid) --user-group  --password $(password) --home-dir $(volume) \n\
 	RUN     echo " [data]" >> /etc/samba/smb.conf                   ;\
 	        echo " comment = data drive" >> /etc/samba/smb.conf     ;\
 	        echo " read only = no" >> /etc/samba/smb.conf           ;\
