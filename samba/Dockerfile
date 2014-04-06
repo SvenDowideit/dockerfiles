@@ -13,9 +13,13 @@ RUN	echo " [data]" >> /etc/samba/smb.conf			;\
 	echo " read only = no" >> /etc/samba/smb.conf		;\
 	echo " locking = no" >> /etc/samba/smb.conf		;\
 	echo " path = /data" >> /etc/samba/smb.conf		;\
+	echo " force user = docker" >> /etc/samba/smb.conf	;\
+	echo " force group = staff" >> /etc/samba/smb.conf	;\
 	echo " guest ok = yes" >> /etc/samba/smb.conf
 
 EXPOSE	139 445
+
+RUN	 useradd docker --uid 1000 --user-group  --password tcuser --home-dir /data
 
 CMD	/etc/init.d/samba start ; tail -f /var/log/dmesg
 
