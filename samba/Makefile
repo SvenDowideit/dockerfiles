@@ -16,8 +16,7 @@
 # its dir into a container, and then share that container's volume using the right 
 # permissions.
 # This example is to share the persistence disk on a boot2docker virtual machine:
-#    `docker run -v /mnt/sda1:/data --name b2d-persistence busybox chmod 777 /data`
-#    `make run`
+#    `tce-load -iw make ; make run-b2d`
 
 data-container?=data-volume
 volume?=/data
@@ -27,7 +26,7 @@ uid?=1000
 password?=tcuser
 group?=staff
 build:
-	echo "\
+	echo -e "\
 	FROM	debian:stable \n\
 	MAINTAINER Sven Dowideit <SvenDowideit@docker.com> \n\
 	RUN	apt-get update ; apt-get install -yq samba \n\
@@ -47,5 +46,10 @@ build:
 run: build
 	docker inspect $(data-container) > /dev/null || docker run -v $(volume) --name $(data-container) busybox chown $(uid) $(volume)
 	docker run -p 139:139 -p 445:445 --rm -ti --volumes-from $(data-container) data-volume-samba
+
+run-b2d: build
+	docker inspect b2d-persistence > /dev/null || docker run -v /mnt/sda1:/data --name b2d-persistence busybox chmod 777 /data
+	ip a | grep 'inet '
+	docker run -p 139:139 -p 445:445 --rm -ti --volumes-from b2d-persistence data-volume-samba
 
 #TODO: work out how to detect the volumes that are imported, and to then share them all - perhaps creating different users depending on ownership?
