@@ -39,7 +39,7 @@ build:
 	        echo " force user = $(user)" >> /etc/samba/smb.conf      ;\
 	        echo " force group = $(group)" >> /etc/samba/smb.conf      ;\
 	        echo " guest ok = yes" >> /etc/samba/smb.conf		\n\
-	CMD	/etc/init.d/samba start ; tail -f /var/log/dmesg \n\
+	CMD	/etc/init.d/samba start && tail -f /var/log/dmesg \n\
 	EXPOSE	139 445 \n\
 	" | docker build -t data-volume-samba -
 
