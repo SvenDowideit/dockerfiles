@@ -1,4 +1,5 @@
 FROM		debian:stable
+CMDBUILD	docker build -t samba https://raw.githubusercontent.com/SvenDowideit/dockerfiles/master/samba/Dockerfile
 CMDRUN		VOLUME='/home' CONTAINER='home-vol' USERID='1000' ;\
 		(docker inspect $CONTAINER > /dev/null ||\
 		docker run -v $VOLUME --name $CONTAINER busybox chown $USERID $VOLUME &&\
