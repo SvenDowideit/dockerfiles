@@ -1,5 +1,5 @@
 CMDBUILD	docker build -t dovecot .
-CMDRUN		docker run --name sven-maildir -v /home/sven busybox true ; docker run -dit -p 143:143 --volumes-from sven-maildir dovecot
+CMDRUN		docker run --name sven-maildir -v /home/sven busybox true ; docker run -d -i -t -p 143:143 --volumes-from sven-maildir dovecot
 
 FROM	debian:testing
 MAINTAINER	Sven Dowideit <SvenDowideit@home.org.au> (@SvenDowideit)
