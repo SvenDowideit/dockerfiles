@@ -1,5 +1,5 @@
 CMDBUILD	docker build -t dovecot .
-CMDRUN		docker run --name sven-maildir -v /home/sven busybox true ; docker run -dit -p 143:143 dovecot bash
+CMDRUN		docker run --name sven-maildir -v /home/sven busybox true ; docker run -dit -p 143:143 --volumes-from sven-maildir dovecot
 
 FROM	debian:testing
 MAINTAINER	Sven Dowideit <SvenDowideit@home.org.au> (@SvenDowideit)
@@ -14,4 +14,4 @@ RUN	cat /chpasswd.in | chpasswd
 
 ADD	dovecot.conf /etc/dovecot/conf.d/99-local.conf
 
-CMD	/etc/init.d/dovecot start ; tail -f /var/log/dovecot.log
+CMD	chown sven:sven /home/sven ; /etc/init.d/dovecot start ; tail -f /var/log/dovecot.log
