@@ -42,6 +42,7 @@ if [ -z "$container" ]; then
 	args[0]="<container_name>"
 	usage
 fi
+
 if ! $docker inspect --format="{{range \$k,\$v := .Volumes}}{{println \$k}}{{end}}" $container > /inspect; then
 	echo "Error: $container is not a valid container name: $_"
 	usage
@@ -58,7 +59,14 @@ if [ "$SERVER" != "started" ]; then
 		$docker kill samba-server
 		$docker rm samba-server
 	fi
-	echo "spawning samba-server container"
+	if ! $docker inspect --format="{{range \$k,\$v := .Volumes}}{{println \$v}}{{end}}" $(uname -n) > /inspect; then
+		echo "Error: $(uname -h) not a container name?: $_"
+		#usage
+		exit 1
+	fi
+	#TODO: this is a very error prone way to do it
+	sock=$(cat /inspect | grep 'docker.sock')
+	echo "spawning samba-server container talking to ${sock}"
 	# from here we should pass the work off to the real samba container
 	#TODO: but how do we know where on the __host__ the docker file and socket are?
 	# I'm running this in the background rather than using run -d, so that --rm will still work
@@ -66,7 +74,7 @@ if [ "$SERVER" != "started" ]; then
 		--expose 139 -p 139:139 						\
 		--expose 445 -p 445:445 						\
 		-e USER -e PASSWORD -e USERID -e GROUP					\
-		-v ${docker_bin}:/docker -v /run/docker.sock:/docker.sock 		\
+		-v ${docker_bin}:/docker -v ${sock}:/docker.sock 		\
 		--volumes-from ${container} 						\
 		svendowideit/samba --start ${container} &
 	# it might be that without the sleep, this container exits before the docker daemon is ready, so the samba-server isn't started?
