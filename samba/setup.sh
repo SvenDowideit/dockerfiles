@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "RUNNING $@"
+#echo "RUNNING $@"
 
 args=("$@")
 # Running as an Entrypoint means the script is not arg0
@@ -21,6 +21,11 @@ usage() {
 	echo
 	exit 1
 }
+
+if [ "$container" = "/bin/sh" -o "$container" = "/bin/bash" ]; then
+	args[0]="<container_name>"
+	usage
+fi
 
 docker="/docker -H unix:///docker.sock "
 
@@ -57,6 +62,7 @@ if [ "$SERVER" != "started" ]; then
 	$docker run --rm --name samba-server						\
 		--expose 139 -p 139:139 						\
 		--expose 445 -p 445:445 						\
+		-e USER -e PASSWORD -e USERID -e GROUP					\
 		-v /usr/bin/docker:/docker -v /run/docker.sock:/docker.sock 		\
 		--volumes-from ${container} 						\
 		samba --start ${container} &
@@ -64,12 +70,13 @@ if [ "$SERVER" != "started" ]; then
 	#TODO: block until container started or times out?
 	sleep 2
 else
-	#TODO: default them, so the user can over-ride
 	#TODO: can we detect the ownership / USERID setting in the destination container?
-	export USER=root
-	export PASSWORD=tcuser
-	export USERID=1000
-	export GROUP=root
+	#export for envsubst
+	export USER
+	export PASSWORD
+	export USERID
+	export GROUP
+	export CONTAINER=$container
 
 	#TODO: this should really trigger the other container - this one should not block
 	for vol in ${volumes[@]}; do

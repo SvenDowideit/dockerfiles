@@ -2,15 +2,19 @@ FROM		debian:stable
 CMDBUILD	docker build -t samba https://raw.githubusercontent.com/SvenDowideit/dockerfiles/master/samba/Dockerfile
 CMDRUN		docker run samba
 
-MAINTAINER	SvenDowideit@docker.com
+MAINTAINER	Sven Dowideit <SvenDowideit@docker.com> (@SvenDowideit)
 
 # gettext for envsubst
-RUN	apt-get update && apt-get install -yq samba gettext
+RUN		apt-get update && apt-get install -yq samba gettext
 
-ADD	share.tmpl /share.tmpl
-ADD	setup.sh /setup.sh
+ADD		share.tmpl /share.tmpl
+ADD		setup.sh /setup.sh
 
 ENTRYPOINT      ["/setup.sh"]
 
-# using the cmdline to only expose the server container's ports, not the plugin
-#EXPOSE	139 445
+# if the volumes have a different ownership, then set the following to 
+# non-root.
+ENV		USER root
+ENV		PASSWORD tcuser
+ENV		USERID 1000
+ENV		GROUP root

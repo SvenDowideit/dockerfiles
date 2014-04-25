@@ -1,22 +1,26 @@
 
 
-# Samba volume sharing plugin
+# Samba Docker volume sharing plugin
 
-Sharing a container's volume should be as simple as `docker run samba <container>`.
+Sharing a Docker container's volume should be as simple as `docker run samba <container>`.
 
-this 'plugin' would then create a samba server container (if needed), and modify its 
-samba configuration volume to add the new link, and then restart (if needed) the container
-to add the new --volumes-from parameter.
+This 'plugin' will create and configure a samba server container that auto-creates shares for all
+the volumes attached to the specified container.
 
-additional options could allow setting different user, permission and naming options.
+`docker run svendowideit/samba` reminds the user what the options are, and the minimal set of 
+`docker` parameters - like `-v /var/run/docker.sock:/var/run/docker.sock` that are needed
 
-Ideally, `docker run samba` would tell the user what the options are, and a minimal set of 
-`docker` parameters - like `-v /var/run/docker.sock:/var/run/docker.sock` etc.
+## Usage
 
-extra possiblity is to have an interactive shell that prompts the user for answers.
+```
+$ docker run samba
 
+please start container with
+   docker run --rm -v $(which docker):/docker -v /run/docker.sock:/docker.sock samba <container_name>
+```
 
-## Step 1
+## How it works
 
-Dockerfile and ENTRYPOINT script that when it has enough info can start a working samba container that shares a volume
-and if not, errors out with helpful info on how to give that info
+The `svendowideit/samba` container uses the bind-mounted docker client and socket to introspect
+the configuration of the specified container, and then uses that information to setup a new container
+that is ``-volumes-from`` setup to give it access.
