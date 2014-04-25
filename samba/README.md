@@ -15,7 +15,7 @@ the volumes attached to the specified container.
 ```
 $ docker run samba
 
-please start container with
+please run with
    docker run --rm -v $(which docker):/docker -v /run/docker.sock:/docker.sock samba <container_name>
 ```
 
