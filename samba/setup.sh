@@ -17,7 +17,7 @@ usage() {
 	echo "please run with:"
 	#TODO: what happens if 'docker' is an alias?
 	#TODO: watch for the --privileged introspection PR merge
-	echo "   docker run --rm -v \$(which docker):/docker -v $(readlink -f /var/run/docker.sock):/docker.sock samba ${args[0]}"
+	echo "   docker run --rm -v \$(which docker):/docker -v $(readlink -f /var/run/docker.sock):/docker.sock svendowideit/samba ${args[0]}"
 	echo
 	exit 1
 }

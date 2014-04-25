@@ -1,6 +1,6 @@
 FROM		debian:stable
-CMDBUILD	docker build -t samba https://raw.githubusercontent.com/SvenDowideit/dockerfiles/master/samba/Dockerfile
-CMDRUN		docker run samba
+CMDBUILD	docker build -t svendowideit/samba https://raw.githubusercontent.com/SvenDowideit/dockerfiles/master/samba/Dockerfile
+CMDRUN		docker run svendowideit/samba
 
 MAINTAINER	Sven Dowideit <SvenDowideit@docker.com> (@SvenDowideit)
 
