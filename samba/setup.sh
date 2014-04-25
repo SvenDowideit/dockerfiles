@@ -29,10 +29,13 @@ fi
 
 docker="/docker -H unix:///docker.sock "
 
+
 # Test for docker socket and client
-if ! $docker info > /dev/null; then
+if ! $docker info > /docker_info; then
 	usage
 fi
+test=($($docker info | grep 'Init Path:'))
+docker_bin=${test[2]}
 
 # first param should be a container name
 if [ -z "$container" ]; then
@@ -63,7 +66,7 @@ if [ "$SERVER" != "started" ]; then
 		--expose 139 -p 139:139 						\
 		--expose 445 -p 445:445 						\
 		-e USER -e PASSWORD -e USERID -e GROUP					\
-		-v /usr/bin/docker:/docker -v /run/docker.sock:/docker.sock 		\
+		-v ${docker_bin}:/docker -v /run/docker.sock:/docker.sock 		\
 		--volumes-from ${container} 						\
 		svendowideit/samba --start ${container} &
 	# it might be that without the sleep, this container exits before the docker daemon is ready, so the samba-server isn't started?
