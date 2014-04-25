@@ -65,7 +65,7 @@ if [ "$SERVER" != "started" ]; then
 		-e USER -e PASSWORD -e USERID -e GROUP					\
 		-v /usr/bin/docker:/docker -v /run/docker.sock:/docker.sock 		\
 		--volumes-from ${container} 						\
-		samba --start ${container} &
+		svendowideit/samba --start ${container} &
 	# it might be that without the sleep, this container exits before the docker daemon is ready, so the samba-server isn't started?
 	#TODO: block until container started or times out?
 	sleep 2
