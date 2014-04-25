@@ -1,9 +1,6 @@
 FROM		debian:stable
 CMDBUILD	docker build -t samba https://raw.githubusercontent.com/SvenDowideit/dockerfiles/master/samba/Dockerfile
-CMDRUN		VOLUME='/home' CONTAINER='home-vol' USERID='1000' ;\
-		(docker inspect $CONTAINER > /dev/null ||\
-		docker run -v $VOLUME --name $CONTAINER busybox chown $USERID $VOLUME &&\
-		docker run -p 139:139 -p 445:445 --rm -t -i --volumes-from $CONTAINER samba $VOLUME )
+CMDRUN		docker run samba
 
 MAINTAINER	SvenDowideit@docker.com
 
@@ -15,4 +12,5 @@ ADD	setup.sh /setup.sh
 
 ENTRYPOINT      ["/setup.sh"]
 
-EXPOSE	139 445
+# using the cmdline to only expose the server container's ports, not the plugin
+#EXPOSE	139 445
