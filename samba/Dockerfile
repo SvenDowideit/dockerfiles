@@ -11,10 +11,3 @@ ADD		share.tmpl /share.tmpl
 ADD		setup.sh /setup.sh
 
 ENTRYPOINT      ["/setup.sh"]
-
-# if the volumes have a different ownership, then set the following to 
-# non-root.
-ENV		USER root
-ENV		PASSWORD tcuser
-ENV		USERID 1000
-ENV		GROUP root

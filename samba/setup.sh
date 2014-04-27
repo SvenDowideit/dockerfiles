@@ -2,14 +2,45 @@
 set -e
 
 #echo "RUNNING $@"
+USER=${USER:-"root"}
+PASSWORD=${PASSWORD:-"tcuser"}
+USERID=${USERID:-1000}
+GROUP=${GROUP:-"root"}
+DOCKER_HOST=${DOCKER_HOST:-"unix:///docker.sock"}
 
 args=("$@")
 # Running as an Entrypoint means the script is not arg0
 container=${args[0]}
-SERVER="no"
 if [ "$container" = "--start" ]; then
+	#echo "Setting up samba cfg ${args[@]}"
 	container=${args[1]}
-	SERVER="started"
+	#TODO: can we detect the ownership / USERID setting in the destination container?
+	CONTAINER=$container
+
+	#for i in $(seq 2 ${#args[@]}); do
+	LIMIT=${#args[@]}
+	# last one is an empty string
+	for ((i=2; i < LIMIT ; i++)); do
+		vol="${args[i]}"
+		echo "add $vol"
+		export VOLUME=$vol
+
+		export VOLUME_NAME=$(echo $VOLUME | sed "s/\///")
+
+		cat /share.tmpl | envsubst >> /etc/samba/smb.conf
+	done
+
+	if [ "$USER" != "root" ]; then
+		useradd $USER --uid $USERID --user-group --password $PASSWORD --home-dir /
+	fi
+	/etc/init.d/samba start
+	tail -f /var/log/dmesg
+	#this should allow the samba-server to be --rm'd
+	exit 0
+fi
+if [ "${args[0]}" = "--start" ]; then
+	echo "Error: something went very wrong"
+	exit 1
 fi
 
 usage() {
@@ -17,7 +48,7 @@ usage() {
 	echo "please run with:"
 	#TODO: what happens if 'docker' is an alias?
 	#TODO: watch for the --privileged introspection PR merge
-	echo "   docker run --rm -v \$(which docker):/docker -v $(readlink -f /var/run/docker.sock):/docker.sock svendowideit/samba ${args[0]}"
+	echo "   docker run --rm -v \$(which docker):/docker -v \$(readlink -f /var/run/docker.sock):/docker.sock -e DOCKER_HOST svendowideit/samba ${args[0]}"
 	echo
 	exit 1
 }
@@ -27,14 +58,13 @@ if [ "$container" = "/bin/sh" -o "$container" = "/bin/bash" ]; then
 	usage
 fi
 
-docker="/docker -H unix:///docker.sock "
-
+docker="/docker -H ${DOCKER_HOST} "
 
 # Test for docker socket and client
-if ! $docker info > /docker_info; then
+if ! $docker -D info > /docker_info; then
 	usage
 fi
-test=($($docker info | grep 'Init Path:'))
+test=($(cat /docker_info | grep 'Init Path:'))
 docker_bin=${test[2]}
 
 # first param should be a container name
@@ -54,56 +84,22 @@ if [ "${#volumes[@]}" -le "0" ]; then
 	usage
 fi
 
-if [ "$SERVER" != "started" ]; then
-	if $docker inspect --format "{{.State.Running}}" samba-server; then
-		$docker kill samba-server
-		$docker rm samba-server
-	fi
-	if ! $docker inspect --format="{{range \$k,\$v := .Volumes}}{{println \$v}}{{end}}" $(uname -n) > /inspect; then
-		echo "Error: $(uname -h) not a container name?: $_"
-		#usage
-		exit 1
-	fi
-	#TODO: this is a very error prone way to do it
-	sock=$(cat /inspect | grep 'docker.sock')
-	echo "spawning samba-server container talking to ${sock}"
-	# from here we should pass the work off to the real samba container
-	#TODO: but how do we know where on the __host__ the docker file and socket are?
-	# I'm running this in the background rather than using run -d, so that --rm will still work
-	$docker run --rm --name samba-server						\
-		--expose 139 -p 139:139 						\
-		--expose 445 -p 445:445 						\
-		-e USER -e PASSWORD -e USERID -e GROUP					\
-		-v ${docker_bin}:/docker -v ${sock}:/docker.sock 		\
-		--volumes-from ${container} 						\
-		svendowideit/samba --start ${container} &
-	# it might be that without the sleep, this container exits before the docker daemon is ready, so the samba-server isn't started?
-	#TODO: block until container started or times out?
-	sleep 2
-else
-	#TODO: can we detect the ownership / USERID setting in the destination container?
-	#export for envsubst
-	export USER
-	export PASSWORD
-	export USERID
-	export GROUP
-	export CONTAINER=$container
-
-	#TODO: this should really trigger the other container - this one should not block
-	for vol in ${volumes[@]}; do
-		echo "add $vol"
-		export VOLUME=$vol
-
-		export VOLUME_NAME=$(echo $VOLUME | sed "s/\///")
-
-		cat /share.tmpl | envsubst >> /etc/samba/smb.conf
-	done
-
-	#cat /etc/samba/smb.conf
-
-	if [ "$USER" != "root" ]; then
-		useradd $USER --uid $USERID --user-group --password $PASSWORD --home-dir /
-	fi
-	/etc/init.d/samba start
-	tail -f /var/log/dmesg
+if $docker inspect --format "{{.State.Running}}" samba-server; then
+	echo "stopping and removing existing server"
+	$docker stop samba-server > /dev/null
+	$docker rm samba-server >/dev/null
 fi
+
+echo "starting samba server container with ${container} ${volumes[@]}"
+
+# from here we should pass the work off to the real samba container
+# I'm running this in the background rather than using run -d, so that --rm will still work
+$docker run --rm --name samba-server						\
+	--expose 139 -p 139:139 						\
+	--expose 445 -p 445:445 						\
+	-e USER -e PASSWORD -e USERID -e GROUP					\
+	--volumes-from ${container} 						\
+	svendowideit/samba --start ${container} ${volumes[@]} &
+# it might be that without the sleep, this container exits before the docker daemon is ready, so the samba-server isn't started?
+#TODO: block until container started or times out?
+sleep 2
