@@ -95,6 +95,8 @@ echo "starting samba server container with ${container} ${volumes[@]}"
 # from here we should pass the work off to the real samba container
 # I'm running this in the background rather than using run -d, so that --rm will still work
 $docker run --rm --name samba-server						\
+	--expose 137 -p 137:137 						\
+	--expose 138 -p 138:138 						\
 	--expose 139 -p 139:139 						\
 	--expose 445 -p 445:445 						\
 	-e USER -e PASSWORD -e USERID -e GROUP					\
