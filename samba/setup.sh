@@ -20,6 +20,8 @@ if [ "$container" = "--start" ]; then
 	#for i in $(seq 2 ${#args[@]}); do
 	LIMIT=${#args[@]}
 	# last one is an empty string
+	mv /etc/samba/smb.conf /etc/samba/smb.conf.bak
+	sed 's/\[global\]/\[global\]\n  log level = 0/' /etc/samba/smb.conf.bak > /etc/samba/smb.conf
 	for ((i=2; i < LIMIT ; i++)); do
 		vol="${args[i]}"
 		echo "add $vol"
@@ -30,11 +32,14 @@ if [ "$container" = "--start" ]; then
 		cat /share.tmpl | envsubst >> /etc/samba/smb.conf
 	done
 
+	#cat /etc/samba/smb.conf
+
 	if [ "$USER" != "root" ]; then
 		useradd $USER --uid $USERID --user-group --password $PASSWORD --home-dir /
 	fi
 	/etc/init.d/samba start
-	tail -f /var/log/dmesg
+	echo "watching /var/log/samba/*"
+	tail -f /var/log/samba/*
 	#this should allow the samba-server to be --rm'd
 	exit 0
 fi
