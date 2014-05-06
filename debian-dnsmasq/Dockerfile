@@ -3,7 +3,7 @@
 # docker build -t svendowideit/dnsmasq .
 # docker run -it --net host --privileged svendowideit/dnsmasq
 
-FROM tianon/debian-roll:stable
+FROM debian:stable
 MAINTAINER	Sven Dowideit <SvenDowideit@home.org.au>
 
 RUN	apt-get update
