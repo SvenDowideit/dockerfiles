@@ -26,8 +26,9 @@ ADD	kernel_config.patch /
 WORKDIR	/linux-3.14.2
 
 
-RUN	make allnoconfig
-RUN	patch -p1 < /kernel_config.patch
+#RUN	make allnoconfig
+#RUN	patch -p1 < /kernel_config.patch
+RUN	make defconfig
 
 RUN	make
 
@@ -58,6 +59,7 @@ RUN	find | cpio -o -H newc | gzip > /tmp/iso/boot/initrd.gz
 RUN	cp -v /linux-3.14.2/arch/x86_64/boot/bzImage /tmp/iso/boot/vmlinuz64
 RUN	cp /usr/lib/syslinux/isolinux.bin /tmp/iso/boot/
 RUN	cp /isolinux.cfg /tmp/iso/boot/
+RUN	cp  /busybox-1.22.1/_install/bin/busybox /tmp/iso/linuxrc
 RUN	echo "SVEN" >> /tmp/iso/version
 
 RUN	xorriso -as mkisofs \
