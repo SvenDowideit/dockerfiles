@@ -8,7 +8,7 @@ ip link add dhcp_server link eth5 type macvlan mode bridge
 #ip link add ... address 00:11:22:33:44:55
 
 #static ip
-ip address add 192.168.1.1/24 broadcast 192.168.1.255 dev dhcp_server
+ip address add 10.10.10.1/24 broadcast 10.10.10.255 dev dhcp_server
 
 #or dynamic
 #dhclient dhcp_server
