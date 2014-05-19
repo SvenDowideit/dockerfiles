@@ -1,7 +1,7 @@
 # lets create an ubuntu image to run the Apache tests I have
 #
 # docker build -t svendowideit/dnsmasq .
-# docker run -it --net host --privileged svendowideit/dnsmasq
+# docker run -it --net host --privileged --name dnsmasq svendowideit/dnsmasq
 
 FROM debian:stable
 MAINTAINER	Sven Dowideit <SvenDowideit@home.org.au>
