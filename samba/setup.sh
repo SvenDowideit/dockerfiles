@@ -89,7 +89,7 @@ fi
 
 sambaContainer=`grep cpu: /proc/1/cgroup  | sed 's/.*\docker\///'`
 sambaImage=`$docker inspect --format="{{.Config.Image}}" $sambaContainer`
-echo "$sambaContainer running using $sambaImage"
+#echo "$sambaContainer running using $sambaImage"
 
 volumes=($(cat /inspect))
 if [ "${#volumes[@]}" -le "0" ]; then
@@ -97,13 +97,13 @@ if [ "${#volumes[@]}" -le "0" ]; then
 	usage
 fi
 
-if $docker inspect --format "{{.State.Running}}" samba-server 2>/dev/null; then
+if $docker inspect --format "{{.State.Running}}" samba-server >/dev/null 2>&1; then
 	echo "stopping and removing existing server"
 	$docker stop samba-server > /dev/null 2>&1
 	$docker rm samba-server >/dev/null 2>&1
 fi
 
-echo "starting samba server container with ${container} ${volumes[@]}"
+echo "starting samba server container sharing ${container}:${volumes[@]}"
 
 # from here we should pass the work off to the real samba container
 # I'm running this in the background rather than using run -d, so that --rm will still work
@@ -114,7 +114,29 @@ $docker run --rm --name samba-server						\
 	--expose 445 -p 445:445 						\
 	-e USER -e PASSWORD -e USERID -e GROUP					\
 	--volumes-from ${container} 						\
-	${sambaImage} --start ${container} ${volumes[@]} &
+	${sambaImage} --start ${container} ${volumes[@]} > /dev/null 2>&1&
 # it might be that without the sleep, this container exits before the docker daemon is ready, so the samba-server isn't started?
 #TODO: block until container started or times out?
 sleep 2
+echo ""
+echo "# run 'docker logs samba-server' to view the samba logs"
+echo ""
+echo "================================================"
+echo ""
+echo "Your data volume (${volumes[@]}) should now be accessible at \\\\<docker ip>\ as 'guest' user (no password)"
+echo ""
+echo "For example, on OSX, using a typical boot2docker vm:"
+echo "    goto Go|Connect to Server in Finder"
+echo "    enter 'cifs://192.168.59.103"
+echo "    hit the 'Connect' button"
+echo "    select the volumes you want to mount"
+echo "    choose the 'Guest' radiobox and connect"
+echo
+echo "Or on Linux:"
+echo "    mount -t cifs //192.168.59.103/data /mnt/data -o username=guest"
+echo
+echo "Or on Windows:"
+echo "    Enter '\\\\192.168.59.103\\data' into Explorer"
+echo "    Log in as Guest - no password"
+echo
+echo
