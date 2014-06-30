@@ -12,7 +12,7 @@ args=("$@")
 # Running as an Entrypoint means the script is not arg0
 container=${args[0]}
 if [ "$container" = "--start" ]; then
-	#echo "Setting up samba cfg ${args[@]}"
+	echo "Setting up samba cfg ${args[@]}"
 	container=${args[1]}
 	#TODO: can we detect the ownership / USERID setting in the destination container?
 	CONTAINER=$container
@@ -53,7 +53,11 @@ usage() {
 	echo "please run with:"
 	#TODO: what happens if 'docker' is an alias?
 	#TODO: watch for the --privileged introspection PR merge
-	echo "   docker run --rm -v \$(which docker):/docker -v \$(readlink -f /var/run/docker.sock):/docker.sock -e DOCKER_HOST svendowideit/samba ${args[0]}"
+	echo "   docker run --rm -v \$(which docker):/docker -v \$(/var/run/docker.sock):/docker.sock -e DOCKER_HOST svendowideit/samba ${args[0]}"
+	echo ""
+	echo " OR - depending on your Docker Host's socket connection and location of its docker binary"
+	echo ""
+	echo "   docker run --rm -v /usr/local/bin/docker:/docker -e DOCKER_HOST svendowideit/samba ${args[0]}"
 	echo
 	exit 1
 }
@@ -83,16 +87,20 @@ if ! $docker inspect --format="{{range \$k,\$v := .Volumes}}{{println \$k}}{{end
 	usage
 fi
 
+sambaContainer=`grep cpu: /proc/1/cgroup  | sed 's/.*\docker\///'`
+sambaImage=`$docker inspect --format="{{.Config.Image}}" $sambaContainer`
+echo "$sambaContainer running using $sambaImage"
+
 volumes=($(cat /inspect))
 if [ "${#volumes[@]}" -le "0" ]; then
 	echo "$container has no volumes, nothing to share"
 	usage
 fi
 
-if $docker inspect --format "{{.State.Running}}" samba-server; then
+if $docker inspect --format "{{.State.Running}}" samba-server 2>/dev/null; then
 	echo "stopping and removing existing server"
-	$docker stop samba-server > /dev/null
-	$docker rm samba-server >/dev/null
+	$docker stop samba-server > /dev/null 2>&1
+	$docker rm samba-server >/dev/null 2>&1
 fi
 
 echo "starting samba server container with ${container} ${volumes[@]}"
@@ -106,7 +114,7 @@ $docker run --rm --name samba-server						\
 	--expose 445 -p 445:445 						\
 	-e USER -e PASSWORD -e USERID -e GROUP					\
 	--volumes-from ${container} 						\
-	svendowideit/samba --start ${container} ${volumes[@]} &
+	${sambaImage} --start ${container} ${volumes[@]} &
 # it might be that without the sleep, this container exits before the docker daemon is ready, so the samba-server isn't started?
 #TODO: block until container started or times out?
 sleep 2
