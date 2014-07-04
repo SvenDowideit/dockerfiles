@@ -16,7 +16,7 @@ the volumes attached to the specified container.
 $ docker run svendowideit/samba
 
 please run with
-   docker run --rm -v $(which docker):/docker -v /run/docker.sock:/docker.sock svendowideit/samba <container_name>
+   docker run --rm -v $(which docker):/docker -v /var/run/docker.sock:/docker.sock svendowideit/samba <container_name>
 ```
 
 ## How it works
