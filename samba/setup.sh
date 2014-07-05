@@ -53,7 +53,7 @@ usage() {
 	echo "please run with:"
 	#TODO: what happens if 'docker' is an alias?
 	#TODO: watch for the --privileged introspection PR merge
-	echo "   docker run --rm -v \$(which docker):/docker -v \$(/var/run/docker.sock):/docker.sock -e DOCKER_HOST svendowideit/samba ${args[0]}"
+	echo "   docker run --rm -v \$(which docker):/docker -v /var/run/docker.sock:/docker.sock -e DOCKER_HOST svendowideit/samba ${args[0]}"
 	echo ""
 	echo " OR - depending on your Docker Host's socket connection and location of its docker binary"
 	echo ""
