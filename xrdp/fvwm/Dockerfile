@@ -22,5 +22,7 @@ ADD xsession /home/dockerx/.xsession
 ADD xrdp.ini /etc/xrdp/
 ADD start.sh /
 
-
 CMD /start.sh
+
+# for RDP
+EXPOSE 3389
