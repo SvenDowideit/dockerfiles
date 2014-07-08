@@ -20,7 +20,10 @@ RUN echo "dockerx:docker" | chpasswd
 ADD xsession /home/dockerx/.xsession
 
 ADD xrdp.ini /etc/xrdp/
+ADD sesman.ini /etc/xrdp/
 ADD start.sh /
+
+ADD run.sh /usr/local/bin/run
 
 CMD /start.sh
 
