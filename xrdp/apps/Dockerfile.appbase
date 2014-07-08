@@ -1,3 +1,6 @@
+#
+# docker build -t appbase - < Docker.appbase
+#
 FROM debian:jessie
 
 RUN apt-get update
