@@ -19,6 +19,7 @@ RUN apt-get install -yq sudo
 # add our user
 RUN adduser --disabled-password --gecos "" dockerx 
 RUN adduser dockerx sudo
+RUN adduser dockerx users
 RUN echo "dockerx:docker" | chpasswd
 ADD xsession /home/dockerx/.xsession
 
