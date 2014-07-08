@@ -7,11 +7,11 @@ I want to use Boot2Docker as my only main OS on my notebook.
 And once booted, I want all the things in containers - separate containers.
 
 We've seen a number of attempts at doing this:
-- Roberto's, and derivations
-- Daniel's
-- subuser
+- [Roberto's - using Xpra](https://github.com/rogaha/docker-desktop), and [derivations - X2Go](https://github.com/paimpozhil/DockerX2go)
+- [Daniel's](https://github.com/dotcloud/docker/tree/master/contrib/desktop-integration)
+- [subuser](https://github.com/subuser-security/subuser)
 
-But hey, I thought I'd have a new go.
+But hey, I thought I'd have a new go, using either a VNC server or an RDP server: so far, the Xrdp based one is winning.
 
 ## Step 1: The MS Remote Desktop server
 
