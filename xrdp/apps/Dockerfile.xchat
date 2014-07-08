@@ -1,0 +1,7 @@
+FROM appbase
+
+RUN apt-get install -yq x11-common x11-utils x11-xserver-utils
+RUN apt-get install -yq xchat
+
+
+ENTRYPOINT ["xchat"]
