@@ -7,6 +7,7 @@ PASSWORD=${PASSWORD:-"tcuser"}
 USERID=${USERID:-1000}
 GROUP=${GROUP:-"root"}
 DOCKER_HOST=${DOCKER_HOST:-"unix:///docker.sock"}
+READONLY=${READONLY:-"no"}
 
 args=("$@")
 # Running as an Entrypoint means the script is not arg0
@@ -112,7 +113,7 @@ $docker run --rm --name samba-server						\
 	--expose 138 -p 138:138 						\
 	--expose 139 -p 139:139 						\
 	--expose 445 -p 445:445 						\
-	-e USER -e PASSWORD -e USERID -e GROUP					\
+	-e USER -e PASSWORD -e USERID -e GROUP -e READONLY			\
 	--volumes-from ${container} 						\
 	${sambaImage} --start ${container} ${volumes[@]} > /dev/null 2>&1&
 # it might be that without the sleep, this container exits before the docker daemon is ready, so the samba-server isn't started?
