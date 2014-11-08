@@ -68,6 +68,10 @@ if [ "$container" = "/bin/sh" -o "$container" = "/bin/bash" ]; then
 	usage
 fi
 
+if [ ! -x /docker ]; then
+	usage
+fi
+
 docker="/docker -H ${DOCKER_HOST} "
 
 # Test for docker socket and client
