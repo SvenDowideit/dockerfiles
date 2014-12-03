@@ -3,20 +3,22 @@
 FROM	debian:testing
 MAINTAINER	Sven Dowideit <SvenDowideit@home.org.au> (@SvenDowideit)
 
+#RUN  echo 'Acquire::http { Proxy "http://10.10.10.2:3142"; };' >> /etc/apt/apt.conf.d/01proxy
+
 RUN	apt-get update
-RUN apt-get install -qy \
-		wget python unzip mercurial\
-		fakeroot kernel-package xz-utils  \
-		bc xorriso syslinux \
-		git vim-tiny lib32ncurses5-dev
+RUN apt-get install -qy wget python unzip mercurial
+RUN apt-get install -qy fakeroot kernel-package xz-utils  
+RUN apt-get install -qy bc xorriso syslinux 
+RUN apt-get install -qy git vim-tiny lib32ncurses5-dev
 
+ENV	VERSION 2014.11
+COPY	buildroot-$VERSION.tar.gz /
+RUN	tar zxvf buildroot-$VERSION.tar.gz
+WORKDIR /buildroot-$VERSION
 
-ADD	http://buildroot.org/downloads/buildroot-2014.02.tar.gz /
-RUN	tar zxvf buildroot-2014.02.tar.gz
-WORKDIR /buildroot-2014.02
-
-ADD	config /buildroot-2014.02/.config
-RUN	make oldconfig ; make
+ADD	config /buildroot-$VERSION/.config
+RUN	make oldconfig 
+RUN	make
 
 CMD	["cat", "output/images/rootfs.iso9660"]
 #CMD	["cat", "output/images/bzImage"]
