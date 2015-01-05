@@ -28,7 +28,7 @@ if [ "$container" = "--start" ]; then
 		echo "add $vol"
 		export VOLUME=$vol
 
-		export VOLUME_NAME=$(echo $VOLUME | sed "s/\///")
+		export VOLUME_NAME=$(echo "$VOLUME" | tr '[\/<>:"\\|?*]' '_')
 
 		cat /share.tmpl | envsubst >> /etc/samba/smb.conf
 	done
