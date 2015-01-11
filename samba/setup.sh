@@ -35,7 +35,7 @@ if [ "$container" = "--start" ]; then
 
 	#cat /etc/samba/smb.conf
 
-	if [ "$USER" != "root" ]; then
+        if ! id -u $USER > /dev/null 2>&1; then
 		useradd $USER --uid $USERID --user-group --password $PASSWORD --home-dir /
 	fi
 	/etc/init.d/samba start

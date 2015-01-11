@@ -6,9 +6,7 @@ MAINTAINER	Sven Dowideit <SvenDowideit@docker.com> (@SvenDowideit)
 
 # gettext for envsubst
 RUN		apt-get update && \
-               apt-get install -yq samba gettext && \
-               userdel www-data
-
+               apt-get install -yq samba gettext
 ADD		share.tmpl /share.tmpl
 ADD		setup.sh /setup.sh
 
