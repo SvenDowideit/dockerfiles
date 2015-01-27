@@ -5,7 +5,9 @@ CMDRUN		docker run svendowideit/samba
 MAINTAINER	Sven Dowideit <SvenDowideit@docker.com> (@SvenDowideit)
 
 # gettext for envsubst
-RUN		apt-get update && apt-get install -yq samba gettext
+RUN		apt-get update && \
+               apt-get install -yq samba gettext && \
+               userdel www-data
 
 ADD		share.tmpl /share.tmpl
 ADD		setup.sh /setup.sh
