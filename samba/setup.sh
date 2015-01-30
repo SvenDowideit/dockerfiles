@@ -28,7 +28,7 @@ if [ "$container" = "--start" ]; then
 		echo "add $vol"
 		export VOLUME=$vol
 
-		export VOLUME_NAME=$(echo $VOLUME | sed "s/\///")
+		export VOLUME_NAME=$(echo "$VOLUME" | tr '[\/<>:"\\|?*+;,=]' '_')
 
 		cat /share.tmpl | envsubst >> /etc/samba/smb.conf
 	done
@@ -65,6 +65,10 @@ usage() {
 
 if [ "$container" = "/bin/sh" -o "$container" = "/bin/bash" ]; then
 	args[0]="<container_name>"
+	usage
+fi
+
+if [ ! -x /docker ]; then
 	usage
 fi
 
