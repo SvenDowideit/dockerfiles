@@ -1,9 +1,9 @@
 
-FROM busybox
-#FROM debian:jessie
+#FROM busybox
+FROM debian:jessie
 
 # need certs to talk to the hub when using token discovery
-#RUN apt-get update && apt-get install -yq ca-certificates
+RUN apt-get update && apt-get install -yq ca-certificates
 
 # get generate_cert
 ADD https://github.com/SvenDowideit/generate_cert/releases/download/0.1/generate_cert-0.1-linux-386 /generate_cert
