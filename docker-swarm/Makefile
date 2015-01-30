@@ -8,4 +8,4 @@ run: default
 
 # Run the node registration and heartbeat on the same Docker daemon
 node:
-	docker run -d -it --net host docker-swarm /swarm join --addr=0.0.0.0:6666 token://$(cat ~/.docker/swarm-token)
+	docker run --rm -it --net host docker-swarm /docker-swarm join --addr=0.0.0.0:6666 token://$(cat ~/.docker/swarm-token)
