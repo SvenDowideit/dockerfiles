@@ -11,10 +11,10 @@ RUN chmod 755 /generate_cert
 
 # add swarm
 # the debian image uses the 64 bit swarm
-#ADD https://github.com/docker/swarm/releases/download/v0.1.0-rc2/docker-swarm_linux-amd64 /docker-swarm
+#ADD https://github.com/docker/swarm/releases/download/v0.1.0-rc2/docker-swarm_linux-amd64 /swarm
 # the busybox one 32 bit? (testing on b2d)
 ADD https://github.com/docker/swarm/releases/download/v0.1.0-rc2/docker-swarm_linux-386 /swarm
-RUN chmod 755 /docker-swarm
+RUN chmod 755 /swarm
 
 # add a docker client
 ADD https://test.docker.com/builds/Linux/x86_64/docker-1.5.0 /docker
