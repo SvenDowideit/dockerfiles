@@ -10,5 +10,4 @@ RUN apt-get update \
 RUN git clone http://git.yoctoproject.org/git/poky
 WORKDIR poky
 RUN git checkout -b dizzy origin/dizzy
-RUN ./oe-init-build-env
-RUN bitbake -k core-image-sato
+RUN bash -c "source ./oe-init-build-env ; bitbake -k core-image-sato"
