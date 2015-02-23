@@ -28,14 +28,14 @@ if [ "$container" = "--start" ]; then
 		echo "add $vol"
 		export VOLUME=$vol
 
-		export VOLUME_NAME=$(echo "$VOLUME" | tr '[\/<>:"\\|?*+;,=]' '_')
+		export VOLUME_NAME=$(echo "$VOLUME" |sed "s/\///" |tr '[\/<>:"\\|?*+;,=]' '_')
 
 		cat /share.tmpl | envsubst >> /etc/samba/smb.conf
 	done
 
 	#cat /etc/samba/smb.conf
 
-	if [ "$USER" != "root" ]; then
+        if ! id -u $USER > /dev/null 2>&1; then
 		useradd $USER --uid $USERID --user-group --password $PASSWORD --home-dir /
 	fi
 	/etc/init.d/samba start
