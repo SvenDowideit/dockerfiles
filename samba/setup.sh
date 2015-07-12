@@ -92,7 +92,7 @@ if ! $docker inspect --format="{{range \$k,\$v := .Volumes}}{{println \$k}}{{end
 	usage
 fi
 
-sambaContainer=`grep cpu: /proc/1/cgroup  | sed 's/.*\docker\///'`
+sambaContainer=`grep cpu[^a-zA-Z\d] /proc/1/cgroup |grep -oE '[0-9a-fA-F]{64}'`
 sambaImage=`$docker inspect --format="{{.Config.Image}}" $sambaContainer`
 #echo "$sambaContainer running using $sambaImage"
 
