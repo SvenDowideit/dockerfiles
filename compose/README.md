@@ -8,8 +8,7 @@ with boot2docker on Mac OS X.
 docker run -it \
            --rm \
            -v /var/run/docker.sock:/var/run/docker.sock \
-           -v $(pwd):$(pwd) \
-           -w $(pwd) \
+           -v $(pwd):/app \
            devstage/compose
 ```
 
@@ -19,8 +18,7 @@ Append docker-compose arguments and options.
 docker run -it \
            --rm \
            -v /var/run/docker.sock:/var/run/docker.sock \
-           -v $(pwd):$(pwd) \
-           -w $(pwd) \
+           -v $(pwd):/app \
            devstage/compose up
 ```
 
@@ -33,8 +31,7 @@ alias docker-compose='docker run \
       -it \
       --rm \
       -v /var/run/docker.sock:/var/run/docker.sock \
-      -v $(pwd):$(pwd) \
-      -w $(pwd) \
+      -v $(pwd):/app \
       devstage/compose'
 ```
 
