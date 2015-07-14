@@ -42,6 +42,23 @@ directory.
 docker-compose up
 ```
 
+## Creating a docker-compose self orchestrating image.
+
+The `Dockerfile.debian` file will build a Docker image based on the docker-compose
+one, adding a `docker-compose.yml` file which runs the a `bash` commandline in a
+`debian` container.
+
+```
+	docker build -t cdebian -f Dockerfile.debian .
+	docker run -it \
+        	--rm \
+        	-v /var/run/docker.sock:/var/run/docker.sock \
+		cdebian
+```
+
+In this example, I'm using a `docker-compose run bashshell` to run the container
+interactively, but you can also do the same thing composing services. 
+
 
 > Note: initial version copied from https://github.com/devstage/docker-compose
 

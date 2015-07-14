@@ -1,0 +1,5 @@
+bashshell:
+  image: debian
+  command: bash
+  tty: true
+  stdin_open: true
