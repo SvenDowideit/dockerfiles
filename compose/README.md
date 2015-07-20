@@ -9,7 +9,7 @@ docker run -it \
            --rm \
            -v /var/run/docker.sock:/var/run/docker.sock \
            -v $(pwd):/app \
-           devstage/compose
+           svendowideit/compose
 ```
 
 Append docker-compose arguments and options.
@@ -19,7 +19,7 @@ docker run -it \
            --rm \
            -v /var/run/docker.sock:/var/run/docker.sock \
            -v $(pwd):/app \
-           devstage/compose up
+           svendowideit/compose up
 ```
 
 ## Create an alias
@@ -32,7 +32,7 @@ alias docker-compose='docker run \
       --rm \
       -v /var/run/docker.sock:/var/run/docker.sock \
       -v $(pwd):/app \
-      devstage/compose'
+      svendowideit/compose'
 ```
 
 This will make the `docker-compose` command work as expected in the current
@@ -49,11 +49,20 @@ one, adding a `docker-compose.yml` file which runs the a `bash` commandline in a
 `debian` container.
 
 ```
-	docker build -t cdebian -f Dockerfile.debian .
+FROM svendowideit/compose
+
+ADD docker-compose.yml /app/
+CMD ["run", "bashshell"]
+```
+
+And then you can build and run it with:
+
+```
+	docker build -t bashshell -f Dockerfile.debian .
 	docker run -it \
         	--rm \
         	-v /var/run/docker.sock:/var/run/docker.sock \
-		cdebian
+		bashshell
 ```
 
 In this example, I'm using a `docker-compose run bashshell` to run the container
