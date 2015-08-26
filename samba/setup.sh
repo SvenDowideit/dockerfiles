@@ -87,7 +87,7 @@ if [ -z "$container" ]; then
 	usage
 fi
 
-if ! $docker inspect --format="{{range \$k,\$v := .Volumes}}{{println \$k}}{{end}}" $container > /inspect; then
+if ! $docker inspect --format="{{range \$k,\$v := .Config.Volumes}}{{println \$k}}{{end}}" $container > /inspect; then
 	echo "Error: $container is not a valid container name: $_"
 	usage
 fi
