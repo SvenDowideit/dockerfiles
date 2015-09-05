@@ -1,0 +1,7 @@
+# m h  dom mon dow   command
+#*/5 *    *   *   *   getmail -danv -r getmailrc_home.org.au > ~/.getmail/getmail.log 2>&1
+#35  */6  *   *   *   sa-learn --no-sync --spam ~/Maildir/.SPAM.training/{cur,new}
+
+#backup the maildir
+#35  3    *   *   *    bup index Maildir ; bup save -r 192.168.1.20: -n Sven-Maildir Maildir
+

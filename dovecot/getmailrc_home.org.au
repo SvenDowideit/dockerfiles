@@ -1,0 +1,14 @@
+[retriever]
+type = SimplePOP3Retriever
+server = mail.home.org.au
+username = someone@home.org.au
+password = no_really
+
+[destination]
+type = Maildir
+path = ~/Maildir/
+
+#[filter]
+#type = Filter_external
+#path = /usr/bin/spamc
+#arguments = ("-s", "10000", )
