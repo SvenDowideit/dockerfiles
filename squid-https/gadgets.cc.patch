@@ -1,0 +1,11 @@
+--- gadgets.cc	2013-07-13 09:25:14.000000000 -0400
++++ gadgets.cc.new	2013-11-26 03:25:25.461794704 -0500
+@@ -257,7 +257,7 @@
+ mimicExtensions(Ssl::X509_Pointer & cert, Ssl::X509_Pointer const & mimicCert)
+ {
+     static int extensions[]= {
+-        NID_key_usage,
++        //NID_key_usage,
+         NID_ext_key_usage,
+         NID_basic_constraints,
+         0

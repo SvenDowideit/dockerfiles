@@ -1,9 +1,9 @@
 # lets create an ubuntu image to run the Apache tests I have
 #
 # docker build -t svendowideit/dnsmasq .
-# docker run -t -i -p 53:53 -p 67:67 -p 53:53/udp -p 67:67/udp svendowideit/dnsmasq
+# docker run -it --net host --privileged --name dnsmasq svendowideit/dnsmasq
 
-FROM tianon/debian-roll:stable
+FROM debian:stable
 MAINTAINER	Sven Dowideit <SvenDowideit@home.org.au>
 
 RUN	apt-get update
@@ -25,7 +25,7 @@ VOLUME	/etc/dnsmasq.d
 #default dnsmasq.conf for my network :)
 ADD	home.org.au.conf	/etc/dnsmasq.d/
 
-RUN bash -c 'echo "ip addr change 192.168.1.2 dev eth0" >> /.bashrc'
+RUN bash -c 'echo "ip addr change 10.10.10.2 dev eth0" >> /.bashrc'
 
 #for debugging
 CMD	["/bin/bash"]
