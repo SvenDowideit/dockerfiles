@@ -3,8 +3,8 @@
 
 FROM debian:jessie
 
-RUN apt-get update
-RUN apt-get install -yq qemu-user qemu-user-static qemu-kvm qemu-system-x86
+RUN apt-get update \
+	&& apt-get install -yq qemu-system-x86 qemu-utils 
 
 
 # qemu-system-x86_64 -curses -net nic -net user -m 2048M -boot d -cdrom ../../boot2docker/boot2docker.iso
