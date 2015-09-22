@@ -87,10 +87,12 @@ if [ -z "$container" ]; then
 	usage
 fi
 
-if ! $docker inspect --format="{{range \$k,\$v := .Volumes}}{{println \$k}}{{end}}" $container > /inspect; then
+volFmt="{{if .Config.Volumes}}{{range \$k, \$v := .Config.Volumes}}{{println \$k}}{{end}}{{else}}{{range \$k, \$v := .Volumes}}{{println \$k}}{{end}}{{end}}"
+if ! $docker inspect --format="$volFmt" $container > /inspect; then
 	echo "Error: $container is not a valid container name: $_"
 	usage
 fi
+
 
 sambaContainer=`grep cpu[^a-zA-Z\d] /proc/1/cgroup |grep -oE '[0-9a-fA-F]{64}'`
 sambaImage=`$docker inspect --format="{{.Config.Image}}" $sambaContainer`
