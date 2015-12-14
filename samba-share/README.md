@@ -32,6 +32,25 @@ The `niccokunzmann/samba-share` container uses the bind-mounted docker client an
 the configuration of the specified container, and then uses that information to setup a new container
 that is `--volumes-from` setup to give it access.
 
+## Tested
+
+- 
+        Client:
+          Version:      1.9.1
+          API version:  1.21
+          Go version:   go1.4.2
+          Git commit:   a34a1d5
+          Built:        Fri Nov 20 13:20:08 UTC 2015
+          OS/Arch:      linux/amd64
+        
+        Server:
+          Version:      1.9.1
+          API version:  1.21
+          Go version:   go1.4.2
+          Git commit:   a34a1d5
+          Built:        Fri Nov 20 13:20:08 UTC 2015
+          OS/Arch:      linux/amd64
+
 ## Credits
 
 This was derived from [`svendowideit/samba`](https://github.com/SvenDowideit/dockerfiles/tree/master/samba) to [`niccokunzmann/samba-share`](https://github.com/niccokunzmann/dockerfiles/tree/master/samba-share) because of [Issue 29](https://github.com/SvenDowideit/dockerfiles/issues/29).
