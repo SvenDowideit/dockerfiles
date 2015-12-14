@@ -106,13 +106,6 @@ execute_in_sh() {
 		usage "Could not detect any volumes to share in container \"$container\"."
 	fi
 
-	if $DOCKER inspect --format "{{.State.Running}}" samba-server >/dev/null 2>&1
-	then
-		echo "Stopping and removing existing server."
-		$DOCKER stop samba-server > /dev/null 2>&1
-		$DOCKER rm samba-server >/dev/null 2>&1
-	fi
-
 	sambaImage=`$DOCKER inspect --format='{{.Config.Image}}' "$sambaContainer"`
 	if [ -z "$sambaImage" ]
 	then
@@ -121,6 +114,14 @@ execute_in_sh() {
 	fi
 
 	server_container_name=samba-server
+
+	if $DOCKER inspect --format "{{.State.Running}}" "$server_container_name" >/dev/null 2>&1
+	then
+		echo "Stopping and removing existing server."
+		$DOCKER stop "$server_container_name" > /dev/null 2>&1
+		$DOCKER rm "$server_container_name" >/dev/null 2>&1
+	fi
+
 	echo "Starting \"$server_container_name\" container sharing the volumes" $volumes "of container \"${container}\"."
 
 	# from here we should pass the work off to the real samba container
@@ -141,13 +142,13 @@ execute_in_sh() {
 	# give advice
 	#   http://stackoverflow.com/a/20686101
 	ips="`docker inspect --format '    {{ .NetworkSettings.IPAddress }}' "$server_container_name"`"
-	example_ip="`echo "$ips" | head -n1`"
+	example_ip="`echo "$ips" | head -n1 | grep -o -E '\S+'`"
 	echo ""
-	echo "# run 'docker logs samba-server' to view the samba logs"
+	echo "# run 'docker logs \"$server_container_name\"' to view the samba logs"
 	echo ""
 	echo "================================================"
 	echo ""
-	echo "Your data volume (" $volumes ") should now be accessible at \\\\$example_ip\ as 'guest' user (no password)"
+	echo "Your data volume (" $volumes ") should now be accessible at "'\\'"$example_ip"'\'" as 'guest' user (no password)"
 	echo ""
 	echo "For example, on OSX, using a typical boot2docker vm:"
 	echo "    goto Go|Connect to Server in Finder"
@@ -160,7 +161,7 @@ execute_in_sh() {
 	echo "    mount -t cifs //$example_ip/data /mnt/data -o username=guest"
 	echo
 	echo "Or on Windows:"
-	echo "    Enter '\\\\$example_ip\\data' into Explorer"
+	echo "    Enter "'\\'"$example_ip"'\'"data' into Explorer"
 	echo "    Log in as Guest - no password"
 	echo ""
 	echo "Ip addresses: "
