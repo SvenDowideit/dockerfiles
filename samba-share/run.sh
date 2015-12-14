@@ -9,9 +9,9 @@ set -e
 if [ "$1" == "--start" ]
 then
 	shift 1
-	/samba-share.sh "@?"
+	/samba-share.sh "$@"
 else
-	/setup-samba-share.sh "@?"
+	/setup-samba-share.sh "$@"
 fi
 
 
