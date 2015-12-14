@@ -13,11 +13,11 @@ error() {
 
 print_usage() {
 	output "Please run with:"
-	output "   docker run svendowideit/samba-share \"$container\" | sh"
+	output "   docker run niccokunzmann/samba-share \"$container\" | sh"
 	output ""
 	output " OR - depending on your Docker Host's location of its docker binary"
 	output ""
-	output "   DOCKER=/usr/local/bin/docker /usr/local/bin/docker run svendowideit/samba-share \"$container\" | sh"
+	output "   DOCKER=/usr/local/bin/docker /usr/local/bin/docker run niccokunzmann/samba-share \"$container\" | /bin/sh"
 	output "Maybe even add sudo."
 }
 
@@ -55,16 +55,19 @@ container=$1
 # check parameters
 if [ -z "$container" ]
 then
-	error "No container name given. Replace <container_name> with the name of the container to share volumes from."
+	# some spacing in case this is not piped to sh
+	docker_host_execute
+	docker_host_execute
+	docker_host_execute # Hello user! Read the message below:
 	container="<container_name>"
-	usage
+	usage "No container name given. Replace <container_name> with the name of the container to share volumes from."
 fi
 
 # create environment for sh
 docker_host_execute "container=$container"
 docker_host_execute "sambaContainer=`grep cpu[^a-zA-Z\d] /proc/1/cgroup | grep -oE '[0-9a-fA-F]{64}'`"
 # It could be that parameters were passed as 
-#   docker run -e USER=... svendowideit/samba-share \"$container\" | sh
+#   docker run -e USER=... niccokunzmann/samba-share \"$container\" | sh
 # We set them like this so they must be named explicitely and
 # are not accidentially taken from the environment.
 docker_host_execute "USER=$USER"
