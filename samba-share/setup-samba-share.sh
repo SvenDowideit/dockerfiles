@@ -70,11 +70,12 @@ docker_host_execute "sambaContainer=`grep cpu[^a-zA-Z\d] /proc/1/cgroup | grep -
 #   docker run -e USER=... niccokunzmann/samba-share \"$container\" | sh
 # We set them like this so they must be named explicitely and
 # are not accidentially taken from the environment.
-docker_host_execute "USER=$USER"
-docker_host_execute "PASSWORD=$PASSWORD"
-docker_host_execute "USERID=$USERID"
-docker_host_execute "GROUP=$GROUP"
-docker_host_execute "READONLY=$READONLY"
+docker_host_execute "USER=\"$USER\""
+docker_host_execute "PASSWORD=\"$PASSWORD\""
+docker_host_execute "USERID=\"$USERID\""
+docker_host_execute "GROUP=\"$GROUP\""
+docker_host_execute "READONLY=\"$READONLY\""
+docker_host_execute "RUN_ARGUMENTS=\"$RUN_ARGUMENTS\""
 
 # define function for sh instead of a string for better syntax highlighting
 execute_in_sh() {
@@ -126,6 +127,10 @@ execute_in_sh() {
 	fi
 
 	echo "Starting \"$server_container_name\" container sharing the volumes" $volumes "of container \"${container}\"."
+	if [ -n "$RUN_ARGUMENTS" ]
+	then
+		echo "\$RUN_ARGUMENTS: "$RUN_ARGUMENTS
+	fi
 
 	# from here we should pass the work off to the real samba container
 	# I'm running this in the background rather than using run -d, so that --rm will still work
@@ -135,6 +140,7 @@ execute_in_sh() {
 		--expose 139 -p 139:139 						\
 		--expose 445 -p 445:445 						\
 		-e USER -e PASSWORD -e USERID -e GROUP -e READONLY			\
+		$RUN_ARGUMENTS								\
 		--volumes-from "$container" 						\
 		"$sambaImage" --start "$container" $volumes > /dev/null 2>&1&
 
