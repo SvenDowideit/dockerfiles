@@ -24,7 +24,7 @@ Possible scenarios are
     - PASSWORD is USER's password (default: "tcuser")
     - USERID to use for the samba USER (default: "1000")
     - GROUP user group (default: "root")
-    - READONLY "yes" or "no" whether write access is granted (default: "no")
+    - READONLY "yes" or "no" whether write access is denied (default: "no")
     - RUN_ARGUMENTS which additional arguments to pass to the `docker run ... samba-server` (default: "")
     
     Warning: If you use a `\` in these variables, it could be removed or unescaped.
