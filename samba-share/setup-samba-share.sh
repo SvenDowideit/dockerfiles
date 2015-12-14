@@ -11,9 +11,7 @@ error() {
 	output "ERROR: $@"
 }
 
-usage() {
-	output
-	[ -n "$1" ] && error "$@"
+print_usage() {
 	output "Please run with:"
 	output "   docker run svendowideit/samba-share \"$container\" | sh"
 	output ""
@@ -21,10 +19,20 @@ usage() {
 	output ""
 	output "   DOCKER=/usr/local/bin/docker /usr/local/bin/docker run svendowideit/samba-share \"$container\" | sh"
 	output "Maybe even add sudo."
+}
+
+usage() {
+	output
+	[ -n "$1" ] && error "$@"
+	print_usage
 	output
 	docker_host_execute exit 1
 	exit 1
 }
+
+
+# remove the default shell print
+docker_host_execute PS1=
 
 docker_host_execute "
 output() {
@@ -34,13 +42,12 @@ docker_host_execute() {
 	true
 }"
 
-# remove the default shell print
-docker_host_execute PS1=
 
 # copy functions to sh
 #   http://stackoverflow.com/a/9895178
-docker_host_execute "`declare -f usage`"
-docker_host_execute "`declare -f error`"
+declare -f usage
+declare -f print_usage
+declare -f error
 
 # parse parameters
 container=$1
@@ -67,14 +74,18 @@ docker_host_execute "GROUP=$GROUP"
 docker_host_execute "READONLY=$READONLY"
 
 # define function for sh instead of a string for better syntax highlighting
-execute_in_sh() 
-	DOCKER=${DOCKER:-"docker"}
-
-	if ! type $DOCKER 2>>/dev/null
+execute_in_sh() {
+	
+	if [ -z "$DOCKER" ]
+	then 
+		DOCKER=docker
+	fi
+	
+	if ! type "$DOCKER" 2>>/dev/null 1>>/dev/null
 	then
 		usage "Could run docker command as \"$DOCKER\". Please specify where to find the docker binary."
 	fi
-
+	
 	# check if variable transfer from host to shell worked
 	if [ -z "$container" ] || [ -z "$sambaContainer" ]
 	then
@@ -87,8 +98,8 @@ execute_in_sh()
 		usage "Container \"$container\" does not exist."
 	fi
 
-	volumes=`$DOCKER inspect --format="{{range \$k,\$v := .Config.Volumes}}{{println \$k}}{{end}}" $container |  grep -v -E "^$" 
-	         $DOCKER inspect --format="{{range \$k,\$v := .Volumes       }}{{println \$k}}{{end}}" $container |  grep -v -E "^$"`
+	volumes=`$DOCKER inspect --format='{{range \$k,\$v := .Config.Volumes}}{{println \$k}}{{end}}' "$container" |  grep -v -E "^$" 
+	         $DOCKER inspect --format='{{range \$k,\$v :=        .Volumes}}{{println \$k}}{{end}}' "$container" |  grep -v -E "^$"`
 
 	if [ -z "$volumes" ]
 	then
@@ -97,29 +108,76 @@ execute_in_sh()
 
 	if $DOCKER inspect --format "{{.State.Running}}" samba-server >/dev/null 2>&1
 	then
-		output "Stopping and removing existing server."
+		echo "Stopping and removing existing server."
 		$DOCKER stop samba-server > /dev/null 2>&1
 		$DOCKER rm samba-server >/dev/null 2>&1
 	fi
 
-	echo "Starting \"samba-server\" container sharing the volumes ${volumes[@]} of container \"${container}\"."
+	sambaImage=`$DOCKER inspect --format='{{.Config.Image}}' "$sambaContainer"`
+	if [ -z "$sambaImage" ]
+	then
+		error "Could not find samba image of container \"$sambaContainer\"."
+		exit 1
+	fi
+
+	server_container_name=samba-server
+	echo "Starting \"$server_container_name\" container sharing the volumes" $volumes "of container \"${container}\"."
 
 	# from here we should pass the work off to the real samba container
 	# I'm running this in the background rather than using run -d, so that --rm will still work
-	$docker run --rm --name samba-server						\
+	$DOCKER run --rm --name "$server_container_name"					\
 		--expose 137 -p 137:137 						\
 		--expose 138 -p 138:138 						\
 		--expose 139 -p 139:139 						\
 		--expose 445 -p 445:445 						\
-		-e USER -e PASSWORD -e USERID -e GROUP -e READONLY			\
-		--volumes-from ${container} 						\
-		${sambaImage} --start ${container} ${volumes[@]} > /dev/null 2>&1&
+		-e USER -e PASSWORD -e USERID -e GROUP					\
+		--volumes-from "$container" 						\
+		"$sambaImage" --start "$container" $volumes > /dev/null 2>&1&
 
+	# wait for the container to finish and remove it
+	$DOCKER wait "$sambaContainer" 2>>/dev/null 1>>/dev/null
+	$DOCKER rm "$sambaContainer" 2>>/dev/null 1>>/dev/null
+
+	# give advice
+	#   http://stackoverflow.com/a/20686101
+	ips="`docker inspect --format '    {{ .NetworkSettings.IPAddress }}' "$server_container_name"`"
+	example_ip="`echo "$ips" | head -n1`"
+	echo ""
+	echo "# run 'docker logs samba-server' to view the samba logs"
+	echo ""
+	echo "================================================"
+	echo ""
+	echo "Your data volume (" $volumes ") should now be accessible at \\\\$example_ip\ as 'guest' user (no password)"
+	echo ""
+	echo "For example, on OSX, using a typical boot2docker vm:"
+	echo "    goto Go|Connect to Server in Finder"
+	echo "    enter 'cifs://$example_ip"
+	echo "    hit the 'Connect' button"
+	echo "    select the volumes you want to mount"
+	echo "    choose the 'Guest' radiobox and connect"
+	echo
+	echo "Or on Linux:"
+	echo "    mount -t cifs //$example_ip/data /mnt/data -o username=guest"
+	echo
+	echo "Or on Windows:"
+	echo "    Enter '\\\\$example_ip\\data' into Explorer"
+	echo "    Log in as Guest - no password"
+	echo ""
+	echo "Ip addresses: "
+	echo "$ips"
+	echo ""
+	exit 0
 }
 
 # copy execute_in_sh to sh
-docker_host_execute "`declare -f execute_in_sh`"
+declare -f execute_in_sh
 
 # execute execute_in_sh in sh
 docker_host_execute execute_in_sh
+
+# finally, if you did not pipe it to sh, you may need some output
+output() {
+	echo "# $@"
+}
+print_usage
 
