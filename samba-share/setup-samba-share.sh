@@ -34,13 +34,13 @@ usage() {
 # remove the default shell print
 docker_host_execute PS1=
 
-docker_host_execute "
+docker_host_execute '
 output() {
 	echo "$@"
 }
 docker_host_execute() {
 	true
-}"
+}'
 
 
 # copy functions to sh

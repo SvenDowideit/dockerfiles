@@ -13,9 +13,21 @@ Possible scenarios are
 
 - `docker run niccokunzmann/samba-share <container> | sh` shares the volumes of `<container>`.
 - `docker run niccokunzmann/samba-share` reminds the user what the options are.
-- Additional parameters can be [passed as environment variable](https://docs.docker.com/engine/reference/run/#env-environment-variables) and can be combined. Possible names are USER PASSWORD USERID GROUP READONLY. Example: 
+- Additional parameters can be [passed as environment variable](https://docs.docker.com/engine/reference/run/#env-environment-variables) and can be combined. Possible names are USER PASSWORD USERID GROUP READONLY RUN_ARGUMENTS. Examples: 
 
-    docker run -e READONLY=yes niccokunzmann/samba-share <container> | sh
+        # run a samba server in read only mode
+        docker run -e READONLY=yes niccokunzmann/samba-share <container> | sh
+        # run a samba server on the host and share the content to other computers
+        docker run -e RUN_ARGUMENTS="--net=host" niccokunzmann/samba-share <container> | sh
+
+    - USER is the samba user (default: "root")
+    - PASSWORD is USER's password (default: "tcuser")
+    - USERID to use for the samba USER (default: "1000")
+    - GROUP user group (default: "root")
+    - READONLY "yes" or "no" whether write access is granted (default: "no")
+    - RUN_ARGUMENTS which additional arguments to pass to the `docker run ... samba-server` (default: "")
+    
+    Warning: If you use a `\` in these variables, it could be removed or unescaped.
 
 ## Try it out
 
