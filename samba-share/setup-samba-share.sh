@@ -126,12 +126,12 @@ execute_in_sh() {
 
 	# from here we should pass the work off to the real samba container
 	# I'm running this in the background rather than using run -d, so that --rm will still work
-	$DOCKER run --rm --name "$server_container_name"					\
+	$DOCKER run --rm --name "$server_container_name"				\
 		--expose 137 -p 137:137 						\
 		--expose 138 -p 138:138 						\
 		--expose 139 -p 139:139 						\
 		--expose 445 -p 445:445 						\
-		-e USER -e PASSWORD -e USERID -e GROUP					\
+		-e USER -e PASSWORD -e USERID -e GROUP -e READONLY			\
 		--volumes-from "$container" 						\
 		"$sambaImage" --start "$container" $volumes > /dev/null 2>&1&
 
@@ -148,7 +148,7 @@ execute_in_sh() {
 	echo ""
 	echo "================================================"
 	echo ""
-	echo "Your data volume (" $volumes ") should now be accessible at "'\\'"$example_ip"'\'" as 'guest' user (no password)"
+	echo "Your data volumes (" $volumes ") should now be accessible at "'\''\'"$example_ip"'\'" as 'guest' user (no password)"
 	echo ""
 	echo "For example, on OSX, using a typical boot2docker vm:"
 	echo "    goto Go|Connect to Server in Finder"
@@ -161,7 +161,7 @@ execute_in_sh() {
 	echo "    mount -t cifs //$example_ip/data /mnt/data -o username=guest"
 	echo
 	echo "Or on Windows:"
-	echo "    Enter "'\\'"$example_ip"'\'"data' into Explorer"
+	echo "    Enter "'\''\'"$example_ip"'\'"data' into Explorer"
 	echo "    Log in as Guest - no password"
 	echo ""
 	echo "Ip addresses: "

@@ -1,37 +1,48 @@
 #!/bin/bash
-set -e
+#set -e
 
 USER=${USER:-"root"}
 PASSWORD=${PASSWORD:-"tcuser"}
 USERID=${USERID:-1000}
 GROUP=${GROUP:-"root"}
+READONLY=${READONLY:-"no"}
 
-args=("$@")
-# Running as an Entrypoint means the script is not arg0
-echo "Setting up samba cfg ${args[@]}"
+CONTAINER="$1"
+shift 1
 
-LIMIT=${#args[@]}
-# last one is an empty string
-mv /etc/samba/smb.conf /etc/samba/smb.conf.bak
-sed 's/\[global\]/\[global\]\n  log level = 0/' /etc/samba/smb.conf.bak > /etc/samba/smb.conf
-for ((i=2; i < LIMIT ; i++)); do
-	vol="${args[i]}"
-	echo "Adding volume \"$vol\""
+echo "Setting loglevel to 0."
+sed 's/\[global\]/\[global\]\n  log level = 0/' -i.bak /etc/samba/smb.conf
 
-	export VOLUME=$vol
-	export VOLUME_NAME=$(echo "$VOLUME" |sed "s/\///" |tr '[\/<>:"\\|?*+;,=]' '_')
+echo "Setting up samba configuration for container \"$CONTAINER\" and volumes "$@"."
 
-	cat /share.tmpl | envsubst >> /etc/samba/smb.conf
+for VOLUME in "$@"
+do
+	echo "Adding volume \"$VOLUME\"."
+
+	VOLUME_NAME=`echo "$VOLUME" | sed "s/\///" | tr '[\/<>:"\\|?*+;,=]' '_'`
+
+	echo "[$VOLUME_NAME]
+  comment = ${VOLUME_NAME} volume from ${CONTAINER}
+  read only = ${READONLY}
+  locking = no
+  path = ${VOLUME}
+  force user = ${USER}
+  force group = ${GROUP}
+  guest ok = yes
+  map archive = no
+  map system = no
+  map hidden = no" >> /etc/samba/smb.conf
 done
 
-#cat /etc/samba/smb.conf
+cat /etc/samba/smb.conf
 
-if ! id -u $USER > /dev/null 2>&1; then
+if ! id -u $USER > /dev/null 2>&1
+then
 	useradd $USER --uid $USERID --user-group --password $PASSWORD --home-dir /
 fi
 /etc/init.d/samba start
 echo "Watching /var/log/samba/*"
 tail -f /var/log/samba/*
-#this should allow the samba-server to be --rm'd
+# This should allow the samba-server to be removed by --rm.
 exit 0
 
