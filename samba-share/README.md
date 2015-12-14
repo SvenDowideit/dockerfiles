@@ -35,4 +35,4 @@ that is `--volumes-from` setup to give it access.
 
 ## Credits
 
-This was derived from `niccokunzmann/samba` by [Nicco Kunzmann](https://github.com/niccokunzmann/)
+This was derived from [`svendowideit/samba`](https://github.com/SvenDowideit/dockerfiles/tree/master/samba) to [niccokunzmann/samba-share](https://github.com/SvenDowideit/dockerfiles/tree/master/samba-share) because of [Issue 29](https://github.com/SvenDowideit/dockerfiles/issues/29).
