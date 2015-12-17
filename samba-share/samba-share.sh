@@ -20,7 +20,9 @@ sed 's/\[global\]/\[global\]\n  log level = 0/' -i.bak /etc/samba/smb.conf
 
 echo "Setting up samba configuration for container \"$CONTAINER\" and volumes "$@"."
 
-IFS="\n"
+# looping through newline separated values
+#   http://superuser.com/questions/284187/bash-iterating-over-lines-in-a-variable
+IFS=$'\n'
 
 for VOLUME in $VOLUMES
 do

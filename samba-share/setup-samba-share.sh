@@ -185,7 +185,7 @@ execute_in_sh() {
 	server_container_name=`docker inspect --format '{{.Name}}' $server_container_id | grep -o -E '[^/].*'`
 	ips="`docker inspect --format '    {{ .NetworkSettings.IPAddress }}' "$server_container_id"`"
 	example_ip="`echo "$ips" | head -n1 | grep -o -E '\S+'`"
-	example_volume=`echo $volumes | head -n1`
+	example_volume=`echo "$volumes" | head -n1`
 	example_volume_name=`volume_name_of "$example_volume"`
 	echo	 ""
 	echo	 "# run 'docker logs \"$server_container_name\"' to view the samba logs"
