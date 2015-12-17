@@ -196,7 +196,7 @@ execute_in_sh() {
 	echo	 ""
 	echo	 "For example, on OSX, using a typical boot2docker vm:"
 	echo	 "    goto Go|Connect to Server in Finder"
-	echo	 "    enter 'cifs://$example_ip"
+	echo	 "    enter 'cifs://$example_ip'"
 	echo	 "    hit the 'Connect' button"
 	echo	 "    select the volumes you want to mount"
 	echo	 "    choose the 'Guest' radiobox and connect"
