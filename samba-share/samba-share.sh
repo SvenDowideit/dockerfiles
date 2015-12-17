@@ -13,14 +13,16 @@ GROUP=${GROUP:-"root"}
 READONLY=${READONLY:-"no"}
 
 CONTAINER="$1"
-shift 1
+VOLUMES="$2"
 
 echo "Setting loglevel to 0."
 sed 's/\[global\]/\[global\]\n  log level = 0/' -i.bak /etc/samba/smb.conf
 
 echo "Setting up samba configuration for container \"$CONTAINER\" and volumes "$@"."
 
-for VOLUME in "$@"
+IFS="\n"
+
+for VOLUME in $VOLUMES
 do
 	echo "Adding volume \"$VOLUME\"."
 

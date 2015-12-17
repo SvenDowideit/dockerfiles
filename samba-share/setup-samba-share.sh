@@ -172,7 +172,7 @@ execute_in_sh() {
 			-e USER -e PASSWORD -e USERID -e GROUP -e READONLY			\
 			$RUN_ARGUMENTS								\
 			--volumes-from "$container" 						\
-			"$sambaImage" --start "$container" $volumes > /dev/null 2>&1 &		\
+			"$sambaImage" --start "$container" "$volumes" > /dev/null 2>&1 &		\
 	}
 
 	# wait for the container to finish and remove it
