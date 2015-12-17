@@ -1,13 +1,15 @@
 
 
-# Samba Docker volume sharing plugin
+Samba Docker volume sharing plugin
+==================================
 
 Sharing a Docker container's volume should be as simple as `docker run niccokunzmann/samba-share <container> | sh`.
 
 This 'plugin' will create and configure a samba server container that auto-creates shares for all
 the volumes attached to the specified container.
 
-## Usage
+Usage
+-----
 
 Possible scenarios are
 
@@ -29,7 +31,8 @@ Possible scenarios are
     
     Warning: If you use a `\` in these variables, it could be removed or unescaped.
 
-## Try it out
+Try it out
+----------
 
 Create a volume in my-data and share its content via samba
 
@@ -38,13 +41,15 @@ Create a volume in my-data and share its content via samba
     # Share it using Samba (Windows file sharing)
     docker run niccokunzmann/samba-share my-data | sh
 
-## How it works
+How it works
+------------
 
 The `niccokunzmann/samba-share` container uses the bind-mounted docker client and socket to introspect
 the configuration of the specified container, and then uses that information to setup a new container
 that is `--volumes-from` setup to give it access.
 
-## Tested
+Tested
+------
 
 - 
         Client:
@@ -63,6 +68,7 @@ that is `--volumes-from` setup to give it access.
           Built:        Fri Nov 20 13:20:08 UTC 2015
           OS/Arch:      linux/amd64
 
-## Credits
+Credits
+-------
 
 This was derived from [`svendowideit/samba`](https://github.com/SvenDowideit/dockerfiles/tree/master/samba) to [`niccokunzmann/samba-share`](https://github.com/niccokunzmann/dockerfiles/tree/master/samba-share) because of [Issue 29](https://github.com/SvenDowideit/dockerfiles/issues/29).
