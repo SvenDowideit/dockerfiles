@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 
+volume_name_of() {
+	# also in samba-share.sh
+	echo "$1" | sed "s/\///" | tr '[\/<>:"\\|?*+;,=]' '_'
+}
 docker_host_execute() {
 	echo "$@"
 }
@@ -27,7 +31,12 @@ usage() {
 	print_usage
 	output
 	docker_host_execute exit 1
+	docker_host_execute
 	exit 1
+}
+print_container_parameter_missing() {
+	container="<container_name>"
+	usage "No container name given. Replace <container_name> with the name of the container to share volumes from."
 }
 
 
@@ -48,6 +57,8 @@ docker_host_execute() {
 declare -f usage
 declare -f print_usage
 declare -f error
+declare -f print_container_parameter_missing
+declare -f volume_name_of
 
 # parse parameters
 container=$1
@@ -55,13 +66,24 @@ container=$1
 # check parameters
 if [ -z "$container" ]
 then
-	# some spacing in case this is not piped to sh
-	docker_host_execute
-	docker_host_execute
-	docker_host_execute # Hello user! Read the message below:
-	container="<container_name>"
-	usage "No container name given. Replace <container_name> with the name of the container to share volumes from."
+	docker_host_execute print_container_parameter_missing
+	output() {
+		echo "# $@"
+	}
+	print_container_parameter_missing
+	exit 1
 fi
+
+# named run could fail due to this bug: 
+#   https://github.com/docker/docker/issues/17691#issuecomment-165269707
+# using labels instead
+server_container_label=samba-server
+
+server_container_ids() {
+	$DOCKER ps -qa --filter label="$server_container_label"
+}
+docker_host_execute "server_container_label=$server_container_label"
+declare -f server_container_ids
 
 # create environment for sh
 docker_host_execute "container=$container"
@@ -117,16 +139,24 @@ execute_in_sh() {
 		exit 1
 	fi
 
-	server_container_name=samba-server
-
-	if $DOCKER inspect --format "{{.State.Running}}" "$server_container_name" >/dev/null 2>&1
+	# remove existing containers as they could block the ports
+	previous_container_ids=`server_container_ids`
+	if [ -n "$previous_container_ids" ] >/dev/null 2>&1
 	then
-		echo "Stopping and removing existing server."
-		$DOCKER stop "$server_container_name" > /dev/null 2>&1
-		$DOCKER rm "$server_container_name" >/dev/null 2>&1
+		echo "Stopping and removing existing servers."
+		$DOCKER unpause $previous_container_ids > /dev/null 2>&1
+		$DOCKER stop $previous_container_ids > /dev/null 2>&1
+		$DOCKER rm $previous_container_ids >/dev/null 2>&1
+	fi
+	
+	# make sure we have no other containers running
+	still_existing_container_ids=`server_container_ids`
+	if [ -n "$still_existing_container_ids" ]
+	then
+		echo "WARNING: these containers still exist but should not:" $still_existing_container_ids
 	fi
 
-	echo "Starting \"$server_container_name\" container sharing the volumes" $volumes "of container \"${container}\"."
+	echo "Starting container with label \"$server_container_label\" sharing the volumes" $volumes "of container \"${container}\"."
 	if [ -n "$RUN_ARGUMENTS" ]
 	then
 		echo "\$RUN_ARGUMENTS: "$RUN_ARGUMENTS
@@ -134,15 +164,16 @@ execute_in_sh() {
 
 	# from here we should pass the work off to the real samba container
 	# I'm running this in the background rather than using run -d, so that --rm will still work
-	$DOCKER run --rm --name "$server_container_name"				\
-		--expose 137 -p 137:137 						\
-		--expose 138 -p 138:138 						\
-		--expose 139 -p 139:139 						\
-		--expose 445 -p 445:445 						\
-		-e USER -e PASSWORD -e USERID -e GROUP -e READONLY			\
-		$RUN_ARGUMENTS								\
-		--volumes-from "$container" 						\
-		"$sambaImage" --start "$container" $volumes > /dev/null 2>&1&
+	{	$DOCKER run --rm --label "$server_container_label"				\
+			--expose 137 -p 137:137 						\
+			--expose 138 -p 138:138 						\
+			--expose 139 -p 139:139 						\
+			--expose 445 -p 445:445 						\
+			-e USER -e PASSWORD -e USERID -e GROUP -e READONLY			\
+			$RUN_ARGUMENTS								\
+			--volumes-from "$container" 						\
+			"$sambaImage" --start "$container" $volumes > /dev/null 2>&1 &		\
+	}
 
 	# wait for the container to finish and remove it
 	$DOCKER wait "$sambaContainer" 2>>/dev/null 1>>/dev/null
@@ -150,32 +181,37 @@ execute_in_sh() {
 
 	# give advice
 	#   http://stackoverflow.com/a/20686101
-	ips="`docker inspect --format '    {{ .NetworkSettings.IPAddress }}' "$server_container_name"`"
+	server_container_id=`server_container_ids | head -n1`
+	server_container_name=`docker inspect --format '{{.Name}}' $server_container_id | grep -o -E '[^/].*'`
+	ips="`docker inspect --format '    {{ .NetworkSettings.IPAddress }}' "$server_container_id"`"
 	example_ip="`echo "$ips" | head -n1 | grep -o -E '\S+'`"
-	echo ""
-	echo "# run 'docker logs \"$server_container_name\"' to view the samba logs"
-	echo ""
-	echo "================================================"
-	echo ""
-	echo "Your data volumes (" $volumes ") should now be accessible at "'\''\'"$example_ip"'\'" as 'guest' user (no password)"
-	echo ""
-	echo "For example, on OSX, using a typical boot2docker vm:"
-	echo "    goto Go|Connect to Server in Finder"
-	echo "    enter 'cifs://$example_ip"
-	echo "    hit the 'Connect' button"
-	echo "    select the volumes you want to mount"
-	echo "    choose the 'Guest' radiobox and connect"
-	echo
-	echo "Or on Linux:"
-	echo "    mount -t cifs //$example_ip/data /mnt/data -o username=guest"
-	echo
-	echo "Or on Windows:"
-	echo "    Enter "'\''\'"$example_ip"'\'"data' into Explorer"
-	echo "    Log in as Guest - no password"
-	echo ""
-	echo "Ip addresses: "
-	echo "$ips"
-	echo ""
+	example_volume=`echo $volumes | head -n1`
+	example_volume_name=`volume_name_of "$example_volume"`
+	echo	 ""
+	echo	 "# run 'docker logs \"$server_container_name\"' to view the samba logs"
+	echo	 ""
+	echo	 "================================================"
+	echo	 ""
+	echo 	 "Your data volumes ("$volumes") should now be accessible at \\\\\\\\$example_ip as 'guest' user (no password)"
+	echo	 ""
+	echo	 "For example, on OSX, using a typical boot2docker vm:"
+	echo	 "    goto Go|Connect to Server in Finder"
+	echo	 "    enter 'cifs://$example_ip"
+	echo	 "    hit the 'Connect' button"
+	echo	 "    select the volumes you want to mount"
+	echo	 "    choose the 'Guest' radiobox and connect"
+	echo	
+	echo	 "Or on Linux:"
+	echo	 "    execute 'sudo mount -t cifs \"//$example_ip/$example_volume_name\" \"/mnt/$example_volume_name\" -o username=guest'"
+	echo	 "    or open 'smb://$example_ip/' in the File Manager"
+	echo	
+	echo	 "Or on Windows:"
+	echo 	 "    Enter '\\\\\\\\$example_ip\' into Explorer"
+	echo	 "    Log in as Guest - no password"
+	echo	 ""
+	echo	 "Ip addresses: "
+	echo	 "$ips"
+	echo	 ""
 	exit 0
 }
 

@@ -1,6 +1,11 @@
 #!/bin/bash
 #set -e
 
+volume_name_of() {
+	# also in setup-samba-share.sh
+	echo "$1" | sed "s/\///" | tr '[\/<>:"\\|?*+;,=]' '_'
+}
+
 USER=${USER:-"root"}
 PASSWORD=${PASSWORD:-"tcuser"}
 USERID=${USERID:-1000}
@@ -19,7 +24,7 @@ for VOLUME in "$@"
 do
 	echo "Adding volume \"$VOLUME\"."
 
-	VOLUME_NAME=`echo "$VOLUME" | sed "s/\///" | tr '[\/<>:"\\|?*+;,=]' '_'`
+	VOLUME_NAME=`volume_name_of $VOLUME`
 
 	echo "[$VOLUME_NAME]
   comment = ${VOLUME_NAME} volume from ${CONTAINER}
