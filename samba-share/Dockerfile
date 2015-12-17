@@ -2,8 +2,7 @@ FROM		debian:stable
 LABEL		CMDBUILD="docker build -t niccokunzmann/samba-share https://raw.githubusercontent.com/niccokunzmann/dockerfiles/master/samba-share/Dockerfile"
 LABEL		CMDRUN="docker run niccokunzmann/samba-share"
 
-MAINTAINER	Sven Dowideit <SvenDowideit@docker.com> (@SvenDowideit)
-MAINTAINER	Nicco Kunzmann <niccokunzmann@rambler.ru> (@dannhaltohneson)
+MAINTAINER	Nicco Kunzmann github.com/niccokunzmann
 
 # gettext for envsubst
 RUN		apt-get update && \
