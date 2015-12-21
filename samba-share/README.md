@@ -45,7 +45,7 @@ How it works
 ------------
 
 The `niccokunzmann/samba-share` container uses the bind-mounted docker client and socket to introspect
-the configuration of the specified container, and then uses that information to setup a new container
+the configuration of the specified container and, then uses that information to setup a new container
 that is `--volumes-from` setup to give it access.
 
 Tested
@@ -72,3 +72,6 @@ Credits
 -------
 
 This was derived from [`svendowideit/samba`](https://github.com/SvenDowideit/dockerfiles/tree/master/samba) to [`niccokunzmann/samba-share`](https://github.com/niccokunzmann/dockerfiles/tree/master/samba-share) because of [Issue 29](https://github.com/SvenDowideit/dockerfiles/issues/29).
+
+
+
