@@ -1,6 +1,6 @@
 FROM		debian:stable
 LABEL		CMDBUILD="docker build -t svendowideit/samba https://raw.githubusercontent.com/SvenDowideit/dockerfiles/master/samba/Dockerfile"
-LABEL		CMDRUN="socker run svendowideit/samba"
+LABEL		CMDRUN="docker run svendowideit/samba"
 
 MAINTAINER	Sven Dowideit <SvenDowideit@docker.com> (@SvenDowideit)
 
