@@ -1,0 +1,7 @@
+{
+    "go.buildOnSave": true,
+    "go.lintOnSave": true,
+    "go.vetOnSave": true,
+    "go.formatTool": "goreturns",
+    "go.gopath": "/home/gopher/project"
+}
