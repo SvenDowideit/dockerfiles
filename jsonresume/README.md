@@ -1,12 +1,23 @@
-# Spartacus theme
 
-This is the **Spartacus** theme for [JSON Resume](http://jsonresume.org/).
-The theme is forked from and based on the [Clean](https://www.npmjs.com/package/jsonresume-theme-clean) theme.  
-Spartacus theme may be previewed at [http://themes.jsonresume.org/spartacus](http://themes.jsonresume.org/spartacus).
+# JSON Resume cli container.
 
-## JSON Resume Boilerplate Theme
-See [boilerplate theme](https://github.com/jsonresume/jsonresume-theme-boilerplate) for instructions on creating your own theme.
+This container makes it easy for you to create, render and publish your [JSON
+based](https://jsonresume.org/) resume.
 
-## License
+Create a new `resume.json` by running:
 
-Available under [the MIT license](http://mths.be/mit).
+```
+docker run --rm -it -v $(pwd):/data/ svendowideit/jsonresume init
+```
+
+Then edit the JSON to add your information, then try it out locally:
+
+```
+docker run -dit --name resume \
+	-v $(pwd):/data/ \
+	-p 4000:4000 svendowideit/jsonresume serve --theme spartacus
+```
+
+And point your browser to `http://localhost:4000`.
+
+
