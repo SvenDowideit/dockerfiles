@@ -87,7 +87,22 @@ if [ -z "$container" ]; then
 	usage
 fi
 
-if ! $docker inspect --format="{{range \$k,\$v := .Config.Volumes}}{{println \$k}}{{end}}" $container > /inspect; then
+# http://stackoverflow.com/questions/32658297/shell-script-condition-for-version-number
+# http://stackoverflow.com/questions/30133664/how-do-you-list-volumes-in-docker-containers
+
+version=`$docker -v 2>&1 | awk -F'[ .]' '{printf "%2.f%02.f%02.f",$3,$4,$5}'`
+
+# echo $version
+
+if [ $version -gt 10800 ]; then
+    echo "docker version 1.8+"
+	volumes=`$docker inspect --format='{{range $k := .Mounts}}{{println $k.Destination}}{{end}}' "$container" |  grep -v -E "^$"`
+else
+	echo "docker version <1.8"
+	volumes=`$docker inspect --format='{{range $k,$v := .Volumes}}{{println $k}}{{end}}' "$container" |  grep -v -E "^$"`
+fi
+		 
+if [ -z "$volumes" ]; then
 	echo "Error: $container is not a valid container name: $_"
 	usage
 fi
@@ -96,7 +111,6 @@ sambaContainer=`grep cpu[^a-zA-Z\d] /proc/1/cgroup |grep -oE '[0-9a-fA-F]{64}'`
 sambaImage=`$docker inspect --format="{{.Config.Image}}" $sambaContainer`
 #echo "$sambaContainer running using $sambaImage"
 
-volumes=($(cat /inspect))
 if [ "${#volumes[@]}" -le "0" ]; then
 	echo "$container has no volumes, nothing to share"
 	usage
