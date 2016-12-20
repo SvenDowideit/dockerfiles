@@ -1,0 +1,100 @@
+
+Usage Boot Info Script:
+-----------------------
+
+  Run the script as sudoer:
+
+    sudo ./bootinfoscript <outputfile>
+
+  or if your operating system does not use sudo:
+
+    su -
+    ./bootinfoscript <outputfile>
+
+
+  When running the script, without specifying an output file, all the output
+  is written to the file "RESULTS.txt" in the same folder as the script.
+
+  But when run from /bin, /sbin, /usr/bin, or another system folder, the file
+  "RESULTS.txt" is written to the home directory of the user.
+
+  When the file "RESULTS.txt" already exists, the results will be written to
+  "RESULTS1.txt". If "RESULTS1.txt" exists, the results will be written to
+  "RESULTS2.txt", ...
+
+
+  To get version number, release date, last git commit and git retrieval date
+  of this script, use (no root rights needed):
+
+    ./bootinfoscript -v
+    ./bootinfoscript -V
+    ./bootinfoscript --version
+
+
+  To get this help text, use (no root rights needed):
+
+    ./bootinfoscript -h
+    ./bootinfoscript -help
+    ./bootinfoscript --help
+
+
+  To automatically gzip a copy of the output file, use (root rights needed):
+
+    ./bootinfoscript -g <outputfile>
+    ./bootinfoscript --gzip <outputfile>
+
+
+  To write the output to stdout instead of a file, use (root rights needed):
+
+    ./bootinfoscript --stdout
+
+
+  The last development version of Boot Info Script can be downloaded, with:
+    (no root rights needed)
+
+    ./bootinfoscript --update <filename>
+
+  If no filename is specified, the file will be saved in the home dir as
+  "bootinfoscript_YYYY-MM-DD_hh:mm:ss".
+
+
+  If multiple versions of Boot Info Script are detected in the same directory,
+  Boot Info Script will list all versions found.
+  In that case you need to force Boot Info Script to run a certain version,
+  by adding "--this" as first argument (root rights needed):
+
+    ./bootinfoscript --this <outputfile>
+
+
+
+Features:
+---------
+
+* Look at each MBR and identify its boot loader:
+    - For GRUB and SuperGRUB: display the controlling partition.
+    - If the MBR is unknown, display the whole MBR.
+
+* Look at all partitions:
+    - Determine their type.
+    - Identify their boot sectors.
+        ° For GRUB: display the controlling partition and the offset of the
+                    stage2 file as recorded in the boot sector.
+        ° For Syslinux: display the full version name, check if internal
+                        checksum matches, display installation directory,
+                        display offset of the ldlinux.sys file.
+        ° For NTFS and FAT: examine the Boot Parameter Block for errors.
+    - Identify the operating system installed on that partition.
+    - List boot programs.
+    - Display the partition table.
+    - Display the output of "blkid".
+    - Look in "/" and "NST" for bootpart codes and display the offset and boot
+      drive, it is trying to chainload.
+    - Look on "/" and "/NST" for stage1 files and display the offset and boot
+      drive of the stage 2 files it is trying to chainload.
+    - Display boot configuration files.
+    - Is able to search LVM partitions if the LVM2 package is installed
+      ("apt-get install lvm2" in debian based distros).
+    - Is able to search Linux Software RAID partitions (MD RAIDs) if the "mdadm"
+      package is installed.
+    - If dmraid is installed, search all RAID drives, detected by dmraid.
+

@@ -1,0 +1,221 @@
+CHANGELOG:
+==========
+
+Version 0.61 (2012-04-01)
+  * Add README file.
+  * Add --update switch to make it easier to download the last development
+    version.
+  * Also detect grub2 files when they are located in /grub2 or /boot/grub2.
+  * Make sure that BIS is run with bash as shell interpreter.
+  * Added --stdout switch: write results to standard output instead of a file.
+  * "boot_info_script.sh" file renamed to "bootinfoscript".
+  * List EFI boot files.
+  * Fix displaying of config file string for some grub2 (v1.99) binaries.
+  * New GUIDs added: - new GUID for Linux basic data partition
+                     - Chrome OS partitions
+  * Check for root rights before checking the list of all needed programs, so
+    it works also correctly on systems where not all programs are in the $PATH
+    variable of a normal user.
+  * Detect if xz or lzma is available on the system (replaces unlzma command).
+  * Add filesystem info for the detected Windows boot sector code.
+  * Fix a crash in BIS which occured when processing a modified grub4dos boot
+    loader file which inserts a SLIC table in the ACPI table.
+
+Version 0.60 (2011-05-17)
+  * New maintainer: Gert Hulselmans.
+  * BIS is now released under the MIT license.
+  * Add this CHANGELOG file.
+  * Source code changes are now tracked in git:
+      http://bootinfoscript.git.sourceforge.net/git/gitweb.cgi?p=bootinfoscript/bootinfoscript;a=summary
+  * Big source code reformatting and cleanup of the code and comments.
+  * The output file can now be specified by adding the filename as argument:
+      bash ./boot_info_script.sh <outputfile>
+  * Display help when invoked with the -h, -help or --help switch.
+  * Gzip the output file when invoked with the -g or --gzip switch.
+    This option will make 2 files: an uncompressed and gzip compressed file.
+  * Warn the user if multiple boot_info_script.sh files are found in the same
+    directory (file downloaded multiple times with Firefox, Chromium,... ):
+      boot_info_script.sh boot_info_script(0).sh boot_info_script(1).sh
+  * Add a lot of GUIDs to the GPT Partition type list.
+  * Grub support code is rewritten and now handled by one function.
+  * Add Grub2 v1.99 support.
+  * Display the embedded Grub2/burg config file.
+  * Syslinux support added:
+      - Check if Syslinux can find its second stage.
+      - Display the version number.
+      - Display the Syslinux directory in which Syslinux will look first for
+        its config file.
+      - Display content of Syslinux config file.
+      - Display the ADV.
+      - List all COM32(R) module files and display the major version number.
+  * Support mount paths with spaces.
+  * Support more than 26 drives.
+  * Add detection for the following MBRs:
+      - Different Syslinux MBRs and versions (standard, GPT and ISOhybrid)
+      - Diskcryptor
+      - FreeDOS
+      - SUSE generic MBR
+      - Grub4dos
+      - WEE
+      - XOSL
+      - ReactOS
+  * Add detection for grub4dos installed in the PBR.
+  * Add detection for FreeDOS PBR code.
+  * Add detection for ReactOS PBR code.
+  * List additional boot files when found:
+      - SYSLINUX/EXTLINUX: ldlinux.sys and extlinux.sys
+      - Grub4dos: grldr and grldr.bin
+      - burg (Grub2 based): /burg/core.img and /boot/burg/core.img
+      - Grub2: added /boot/grub2/core.img as alternative location
+      - FreeDOS: kernel.sys
+      - DellDiagnostics: dellbio.bin and dellrmk.bin
+      - ReactOS: freeldr.sys qnd freeldr.ini
+  * Display offset of file on a disk in GB and GiB for Grub(2) and Syslinux.
+  * Display embedded config file for Grub4dos/WEE.
+  * Most lines in the output file are now 80 characters or less.
+  * Prefer gawk above busybox awk (nawk 1.3.3 has to many bugs).
+  
+Version 0.55 (2010-02-15)
+  * Show blkid info for all drives.
+
+Version 0.54 (2010-02-14)
+  * Display boot_info_script version and release date when invoked with the
+    -v, -V or --version switch.
+  * Save boot_info_script version and release date in the RESULTS.TXT file.
+  * Workaround for blkid -p, when this parameter isn't supported by blkid.
+
+Version 0.53 (2010-02-12)
+  * Use "sfdisk -s" instead of "fdisk -s", when available.
+
+Version 0.52 (2010-02-12)
+  * Add /wubildr, /ubuntu/winboot/wubildr, /ubuntu/winboot/wubildr.mbr and
+    /ubuntu/disks/home.disk to the boot programs list.
+  * Handle output of newer versions of filefrag correctly.
+
+Version 0.51 (2010-02-04)
+  * Add io.sys, msdos.sys and command.com to the boot programs list.
+
+Version 0.50 (2010-01-29)
+  * If a filesystem is already mounted, use the current mountpoint instead of
+    creating a new mountpoint.
+  * Search all RAID drives detected by dmraid.
+
+Version 0.49 (2010-01-26)
+  * Add initramfs to list of files used by grub.
+  * Add Acronis SZ PBR detection.
+  * Scan also drives without a partition table, but with a filesystem.
+  * Display only the mount output for partitions and drives.
+
+Version 0.48 (2010-01-12)
+  * Add "ls -R /dev/mapper" output.
+
+Version 0.47 (2010-01-09)
+  * Add a separate list for finding config and boot program files on FAT
+    partitions.
+  * Add Paragon MBR detection.  
+
+Version 0.46 (2010-01-07)
+
+Version 0.45 (2010-01-07)
+  * Check if all needed programs are available before running the rest of the
+    script.
+  * Detect extended partitions linking to another extended partition.
+
+Version 0.44 (2009-12-31)
+  * Add Linux Software Raid (dmraid) support.
+
+Version 0.43 (2009-12-30)
+  * Rewrite LVM support code.
+  * Rewrite Wubi support code.
+
+Version 0.42 (2009-12-20)
+  * Add LVM support.
+  * Add GUID for BIOS Boot partition.
+  
+Version 0.41 (2009-12-08)
+
+Version 0.40 (2009-12-07)
+  * Display the directory for which core.img of Grub2 looks for its config file
+    and module files.
+
+Version 0.39 (2009-12-05)
+  * Add support for getting the Slackware version info.
+
+Version 0.38 (2009-12-05)
+  * Add support for differenciating between Windows Vista and Windows 7 as OS
+    installed on a certain partition.
+
+Version 0.37 (2009-11-28)
+  * Small fix for Grub2 v1.97 support.
+
+Version 0.36 (2009-11-19)
+  * Add proper Grub2 v1.97 support.
+
+Version 0.35 (2009-11-15)
+  * Save the RESULTS.TXT file in the home dir, when the script is located in
+    /bin, /sbin, /usr/bin, or other system folders.
+
+Version 0.34 (2009-11-14)
+  * Disable some parts of the Grub2 v1.97 support code, which currently doesn't
+    work, due missing parts.
+
+Version 0.33 (2009-11-13)
+  * Add Grub2 v1.97 support.
+  * Add Syslinux, Truecrypt and Master Boot Loader MBR detection.
+
+Version 0.32 (2009-04-17)
+  * Add Acer 3 MBR detection.
+  * Fix losetup --sizelimit problem (not supported on older versions of losetup).
+
+Version 0.31 (2009-04-14)
+  * Some small changes related to BootIt NG.
+
+Version 0.30 (2009-04-10)
+  * Only use the first listed mount point when multiple are found by mount for
+    the same partition.
+
+Version 0.29 (2009-03-25)
+  * Check if /etc exists, instead of /etc/lsb-release, before getting the distro
+    version out of /etc/issue.
+
+Version 0.28 (2009-03-22)
+  * Add Wubi detection.
+
+Version 0.27 (2009-02-22)
+  * Reorganisation of the partition table function.
+
+Version 0.26 (2009-02-20)
+  * Add Fat32 PBR detection.
+
+Version 0.25 (2009-02-15)
+  * Add /Windows/System32/winload.exe to the boot programs list.
+  * Add some missing partition IDs and their full name.
+  * Add Solaris MBR detection.
+
+Version 0.24 (2009-02-01)
+  * Display full name of partition ID.
+
+Version 0.23 (2009-01-29)
+  * Add HFS+ GUID.
+  * Add GAG MBR detection.
+  * Add BSD 4.4 Fat32 PBR detection.
+  * Display fake hard drives.
+
+Version 0.22 (2009-01-25)
+  * Unmount partitions afterwards, when they were not mounted before running
+    the script.
+
+Version 0.21 (2009-01-23)
+  * GPT support added.
+  * BootIt NG partition table support added.
+  * Check for overlapping partitions.
+  * Check if logical partitions are inside the extended partition.
+  * Display the location (on the drive) of files read by Grub.
+
+Version 0.11 (2009-01-12)
+  * Adds support for reading the partition table.
+
+Version 0.10 (2009-01-09)
+  * Initial release by Ulrich Meierfrankenfeld with help from caljohnsmith.
+  * The birth of boot_info_script:
+    http://ubuntuforums.org/showthread.php?t=837791
