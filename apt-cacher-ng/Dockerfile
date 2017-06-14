@@ -1,6 +1,6 @@
 #
-# BUILD		docker build -t svendowideit/apt-cacher .
-# RUN		docker run -d -p 3142:3142 -name apt-cacher-run apt-cacher
+# BUILD		docker build -t svendowideit/apt-cacher-ng .
+# RUN		docker run -d -p 3142:3142 --restart=always --name apt-cacher -v /var/cache/apt-cacher-ng:/var/cache/apt-cacher-ng svendowideit/apt-cacher-ng
 #
 # and then you can run containers with:
 # 		docker run -t -i -rm -e http_proxy http://192.168.1.2:3142/ debian bash
