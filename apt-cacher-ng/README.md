@@ -28,6 +28,8 @@ container.
 1. Use `--buildarg` to get your proxy setting into the Dockerfile
 2. Add an apt Proxy setting
    `echo 'Acquire::http { Proxy "http://dockerhost:3142"; };' >> /etc/apt/conf.d/01proxy`
+   `echo "Acquire::httsp { Proxy \"DIRECT\"; };" >> /etc/apt/apt.conf.d/01proxy`
+
 3. Set an environment variable:
    `http_proxy=http://dockerhost:3142/`
 4. Change your `sources.list` entries to start with
@@ -43,6 +45,7 @@ FROM ubuntu:16.04
 ARG APTPROXY=
 
 RUN echo "Acquire::http { Proxy \"$APTPROXY\"; };" >> /etc/apt/apt.conf.d/01proxy \
+    && echo "Acquire::httsp { Proxy \"DIRECT\"; };" >> /etc/apt/apt.conf.d/01proxy \
     && cat /etc/apt/apt.conf.d/01proxy \
     && apt-get update \
     && apt-get install -y --no-install-recommends
@@ -61,7 +64,8 @@ Or, if you set APTPROXY in your env
 a local version of a common base:
 
     FROM ubuntu
-    RUN  echo 'Acquire::http { Proxy "http://dockerhost:3142"; };' >> /etc/apt/apt.conf.d/01proxy
+    RUN  echo 'Acquire::http { Proxy "http://dockerhost:3142"; };' >> /etc/apt/apt.conf.d/01proxy \
+         && echo "Acquire::httsp { Proxy \"DIRECT\"; };" >> /etc/apt/apt.conf.d/01proxy \
     RUN apt-get update && apt-get install -y vim git
 
     # docker build -t my_ubuntu .
