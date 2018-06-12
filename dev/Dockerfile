@@ -1,4 +1,4 @@
-FROM debian:jessie
+FROM debian:latest
 MAINTAINER Sven Dowideit <SvenDowideit@home.org.au> @SvenDowideit
 
 RUN apt-get update \
