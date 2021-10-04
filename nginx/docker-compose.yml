@@ -1,0 +1,12 @@
+version: "2"
+
+services:
+  nginx:
+    image: nginx
+    restart: always
+    ports:
+      - "9999:80"
+    labels:
+      label_test: "${TEST}"
+    environment:
+      env_test: "${TEST}"
